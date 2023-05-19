@@ -1,16 +1,17 @@
-import proj4 from "proj4";
+import reproject from "reproject";
 
-// Define the source and destination projections
-const sourceProjection = "EPSG:32633"; // UTM33 N
-const destinationProjection = "EPSG:3857"; // Web Mercator
+export function convertGeoJSON(filePath) {
+  // Read in the GeoJSON file
+  const geojson = require(filePath);
 
-// Load the projection definitions
-proj4.defs([
-  ["EPSG:32633", "+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs"],
-  [
-    "EPSG:3857",
-    "+proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +wktext  +no_defs",
-  ],
-]);
+  // Define the current projection of the GeoJSON data
+  const fromProj = geojson.crs.properties.name;
 
-// Use the transformed data to display on the map
+  // Define the desired projection (Web Mercator)
+  const toProj = "EPSG:3857";
+
+  // Convert the GeoJSON data to the desired projection
+  const converted = reproject.reproject(geojson, fromProj, toProj);
+
+  return converted;
+}
