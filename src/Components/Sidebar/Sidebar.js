@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import MapSettings from "./MapSettings/MapSettings";
 import "./Sidebar.css";
 
 function Sidebar() {
@@ -12,7 +13,7 @@ function Sidebar() {
   const renderSelectedContent = () => {
     switch (selectedItem) {
       case "map":
-        return <h1>Map Content</h1>;
+        return <MapSettings />;
       case "data":
         return <h1>Data Content</h1>;
       case "layers":
