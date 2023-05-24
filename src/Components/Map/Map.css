@@ -1,0 +1,24 @@
+/* Custom styles for the BasemapGallery widget */
+.esri-basemap-gallery {
+  border: 2px solid greenyellow;
+}
+
+/* Customize the item container */
+.esri-basemap-gallery__item-container {
+  /* Add your custom styles here */
+}
+
+/* Customize the item */
+.esri-basemap-gallery__item {
+  /* Add your custom styles here */
+}
+
+/* Customize the item title */
+.esri-basemap-gallery__item-title {
+  /* Add your custom styles here */
+}
+
+/* Customize the item thumbnail */
+.esri-basemap-gallery__item-thumbnail {
+  /* Add your custom styles here */
+}
