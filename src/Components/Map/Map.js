@@ -9,7 +9,7 @@ const Map = () => {
     React.useContext(MapContext);
   //Local states
   const [mapView, setMapView] = useState(null);
-  const basemapGalleryRef = useRef(null);
+  const [basemapGallery, setBasemapGallery] = useState(null);
 
   //Add Map when page loads
   useEffect(() => {
@@ -50,9 +50,6 @@ const Map = () => {
       view.when(() => {
         setMapView(view);
       });
-
-      basemapGalleryRef.current = bgExpand.BasemapGallery;
-      console.log(basemapGalleryRef.current);
     });
   }, []);
 
@@ -69,8 +66,6 @@ const Map = () => {
       });
     }
   }, [mapView, basemapOpacity]);
-
-  //When changing basemap, resetting settings to default
 
   return (
     <div style={{ height: "100%", width: "100%" }}>

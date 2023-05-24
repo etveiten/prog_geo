@@ -11,20 +11,14 @@ const MapSettings = () => {
 
   const [sliderValue, setSliderValue] = useState(basemapOpacity * 100);
 
-  useEffect(() => {
-    setSliderValue(basemapOpacity * 100);
-  }, [basemapOpacity]);
-
   const handleSliderChange = (event) => {
     const opacity = event.target.value / 100;
     setBasemapOpacity(opacity);
   };
 
   useEffect(() => {
-    // Update the slider value when basemapOpacity changes
-    setSliderValue(basemapOpacity * 100);
+    console.log(basemapOpacity);
   }, [basemapOpacity]);
-
   return (
     // JSX code for your MapSettings component
     <div>
