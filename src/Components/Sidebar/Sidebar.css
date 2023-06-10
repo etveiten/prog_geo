@@ -48,3 +48,8 @@
   background-color: #d9d9d9;
   text-align: center;
 }
+
+.selected {
+  background-color: dimgrey;
+  color: white;
+}
