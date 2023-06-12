@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import MapSettings from "./MapSettings/MapSettings";
 import DataList from "./DataHandler/DataList";
+import LayersList from "./Layers/LayersList";
 import "./Sidebar.css";
 
 function Sidebar() {
@@ -18,7 +19,7 @@ function Sidebar() {
       case "data":
         return <DataList />;
       case "layers":
-        return <h1>Layers Content</h1>;
+        return <LayersList />;
       case "tools":
         return <h1>Tools Content</h1>;
       case "search":

@@ -3,6 +3,7 @@ import { loadModules } from "esri-loader";
 import { MapContext } from "./MapContext";
 import { LayersContext } from "../Sidebar/Layers/LayersContext";
 import Layer from "../Sidebar/Layers/Layer";
+
 import "./Map.css";
 
 const Map = () => {
@@ -13,7 +14,13 @@ const Map = () => {
   const [mapView, setMapView] = useState(null);
   const [basemapGallery, setBasemapGallery] = useState(null);
 
-  const { selectedLayers } = useContext(LayersContext);
+  const {
+    layerComponents,
+    removedLayers,
+    setLayerComponents,
+    clearRemovedLayers,
+  } = useContext(LayersContext);
+  const [removeLayerCounter, setRemoveLayerCounter] = useState(0);
   const mapLayersRef = useRef([]);
 
   //Add Map when page loads
@@ -61,29 +68,37 @@ const Map = () => {
     );
   }, []);
 
-  //Listen to the selected layers, and render them when selected and remove them when deselected
+  //Store current layers
+
   useEffect(() => {
     loadModules(["esri/layers/GeoJSONLayer"]).then(([GeoJSONLayer]) => {
-      // Remove layers that are no longer in selectedLayers
+      //Check the current layers on the map, and if the current layer is no longer in the layerComponents array, delete the layer
       mapLayersRef.current.forEach((layer) => {
-        if (!selectedLayers.includes(layer.id)) {
+        if (!layerComponents.includes(layer.name)) {
           mapView.map.remove(layer);
         }
       });
 
-      // Add new layers from selectedLayers
-      selectedLayers.forEach((layerName) => {
-        const layerUrl = `http://127.0.0.1:8080/${layerName}.json`; // Construct the layer URL
-        if (!mapLayersRef.current.find((layer) => layer.id === layerName)) {
-          const layer = new GeoJSONLayer({
-            url: layerUrl,
-          });
-          mapView.map.add(layer);
-          mapLayersRef.current.push(layer);
-        }
-      });
+      //Check the layer components array, and if there is a new layer in the list - add the new layer to the map
+      //Slice and reverse the list so the last element added to the list is rendered first, hence this layer will be on the bottom
+      layerComponents
+        .slice()
+        .reverse()
+        .forEach((layer) => {
+          if (
+            !mapLayersRef.current.find((layers) => layers.name === layer.name)
+          ) {
+            const newLayer = new GeoJSONLayer({
+              url: layer.url,
+            });
+            mapView.map.add(newLayer);
+            mapLayersRef.current.push(newLayer);
+          }
+        });
     });
-  }, [selectedLayers, mapView]);
+
+    console.log(layerComponents);
+  }, [layerComponents]);
 
   //Listen to map settings changes
   useEffect(() => {
