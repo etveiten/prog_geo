@@ -1,30 +1,82 @@
 import React, { createContext, useState } from "react";
-
-export const LayersContext = createContext();
+export const LayersContext = createContext({
+  selectedLayers: [], // Set an initial value
+  addLayer: () => {},
+  removeLayer: () => {},
+  setLayerColor: () => {},
+  layerComponents: [],
+  setLayerComponents: () => {},
+  removedLayers: [],
+  clearRemovedLayers: () => {},
+});
 
 export const LayersProvider = ({ children }) => {
-  const [selectedLayers, setSelectedLayers] = useState([]); // Initialize selectedLayers as an empty array
+  const [layerComponents, setLayerComponents] = useState([]);
+  const [selectedLayers, setSelectedLayers] = useState([]);
+  const [removedLayers, setRemovedLayers] = useState([]);
 
-  //Add layer the list of selectedLayers
-  const addLayer = (layerName) => {
-    setSelectedLayers((prevLayers) => [...prevLayers, layerName]);
+  const addLayer = (layer) => {
+    if (!layerComponents.some((l) => l.name === layer.name)) {
+      setLayerComponents((prevComponents) => [layer, ...prevComponents]);
+    }
+    setSelectedLayers((prevLayers) => [...prevLayers, layer.name]);
   };
 
-  //Remove layer from the list of selectedLayers
   const removeLayer = (layerName) => {
+    setLayerComponents((prevComponents) =>
+      prevComponents.filter((component) => component.name !== layerName)
+    );
     setSelectedLayers((prevLayers) =>
       prevLayers.filter((layer) => layer !== layerName)
     );
+    setRemovedLayers((prevRemovedLayers) => [...prevRemovedLayers, layerName]);
+    console.log("layer removed" + layerName.toString());
   };
 
-  //Remove all layers from the list of selectedLayers
+  const reorderLayers = (startIndex, endIndex) => {
+    setLayerComponents((prevComponents) => {
+      const components = [...prevComponents];
+      const [removed] = components.splice(startIndex, 1);
+      components.splice(endIndex, 0, removed);
+      return components;
+    });
+  };
+
   const removeAllLayers = () => {
-    setSelectedLayers([]);
+    setLayerComponents([]);
+  };
+
+  const setLayerColor = (layerName, color) => {
+    setLayerComponents((prevComponents) =>
+      prevComponents.map((component) =>
+        component.name === layerName
+          ? { ...component, color: color }
+          : component
+      )
+    );
+  };
+
+  const setLayerComponentsWrapper = (components) => {
+    setLayerComponents(components);
+  };
+
+  const clearRemovedLayers = () => {
+    setRemovedLayers([]);
   };
 
   return (
     <LayersContext.Provider
-      value={{ selectedLayers, addLayer, removeLayer, removeAllLayers }}
+      value={{
+        layerComponents,
+        addLayer,
+        removeLayer,
+        reorderLayers,
+        removeAllLayers,
+        setLayerColor,
+        setLayerComponents: setLayerComponentsWrapper,
+        removedLayers,
+        clearRemovedLayers,
+      }}
     >
       {children}
     </LayersContext.Provider>

@@ -2,11 +2,10 @@ import React, { useState, useEffect, useContext } from "react";
 import { LayersContext } from "../Layers/LayersContext";
 
 function DataList() {
-  //Context methods for the Layers
-  const { addLayer, removeLayer, selectedLayers } = useContext(LayersContext); // Access addLayer and removeLayer functions from LayersContext
+  // Context methods for the Layers
+  const { addLayer, removeLayer, selectedLayers } = useContext(LayersContext);
   const [dataFiles, setDataFiles] = useState([]);
 
-  //Add the names of the files in the Data folder to the dataFiles array
   useEffect(() => {
     const importAll = (r) =>
       r.keys().map((fileName) => fileName.match(/([^/]+)\.json$/)[1]);
@@ -17,9 +16,17 @@ function DataList() {
     setDataFiles(files);
   }, []);
 
-  //Check if a layer is selected
   const isLayerSelected = (fileName) => {
-    return selectedLayers.includes(fileName);
+    return selectedLayers && selectedLayers.includes(fileName);
+  };
+
+  const handleAddLayer = (fileName) => {
+    if (!isLayerSelected(fileName)) {
+      const layerUrl = `http://127.0.0.1:8080/${fileName}.json`; // Construct the layer URL
+      addLayer({ name: fileName, url: layerUrl });
+    } else {
+      removeLayer(fileName);
+    }
   };
 
   return (
@@ -29,13 +36,7 @@ function DataList() {
         {dataFiles.map((fileName) => (
           <li key={fileName}>
             {fileName}
-            <button
-              onClick={() =>
-                isLayerSelected(fileName)
-                  ? removeLayer(fileName)
-                  : addLayer(fileName)
-              }
-            >
+            <button onClick={() => handleAddLayer(fileName)}>
               {isLayerSelected(fileName) ? "Remove Layer" : "Add Layer"}
             </button>
           </li>

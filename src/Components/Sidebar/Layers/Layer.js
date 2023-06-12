@@ -1,18 +1,27 @@
-import React, { useEffect } from "react";
-import { loadModules } from "esri-loader";
+import React, { useEffect, useContext } from "react";
+import { LayersContext } from "./LayersContext";
 
-const Layer = ({ url }) => {
-  useEffect(() => {
-    loadModules(["esri/layers/GeoJSONLayer"]).then(([GeoJSONLayer]) => {
-      const layer = new GeoJSONLayer({
-        url: url,
-      });
+const Layer = ({ name, color, onColorChange, layerRenderer }) => {
+  const { removeLayer } = useContext(LayersContext);
 
-      return layer;
-    });
-  }, []);
+  const handleRemoveLayer = () => {
+    removeLayer(name);
+  };
+  const handleColorChange = (e) => {
+    // Call the onColorChange function with the new color value
+    const newColor = e.target.value;
+    onColorChange(name, newColor);
+  };
 
-  return null; // This component doesn't render anything directly
+  //Styling for the layer:
+
+  return (
+    <div>
+      <span>{name}</span>
+      <input type="color" value={color} />
+      <button onClick={handleRemoveLayer}> Remove Layer</button>
+    </div>
+  );
 };
 
 export default Layer;
