@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { LayersContext } from "./LayersContext";
 import { DragDropContext, Draggable } from "react-beautiful-dnd";
 import { StrictModeDroppable } from "./StrictModeDroppable";
@@ -6,7 +6,7 @@ import Layer from "./Layer";
 import "./LayersList.css";
 
 const LayersList = () => {
-  const { selectedLayers, reorderLayers, setLayerColor, layerComponents } =
+  const { reorderLayers, setLayerColor, setLayerOpacity, layerComponents } =
     useContext(LayersContext);
 
   const handleDragEnd = (result) => {
@@ -18,12 +18,13 @@ const LayersList = () => {
     reorderLayers(startIndex, endIndex);
   };
 
-  const handleColorChange = (layerName) => (event) => {
-    const newColor = event.target.value;
+  const handleColorChange = (layerName, newColor) => {
     setLayerColor(layerName, newColor);
   };
 
-  //Variable of reversed layer components so the last layer added is first in the list
+  const handleOpacityChange = (layerName, newOpacity) => {
+    setLayerOpacity(layerName, newOpacity);
+  };
 
   return (
     <div>
@@ -52,7 +53,10 @@ const LayersList = () => {
                       <Layer
                         name={layer.name}
                         color={layer.color}
-                        onColorChange={handleColorChange(layer.name)}
+                        outlineColor={layer.outlineColor}
+                        opacity={layer.opacity}
+                        onColorChange={handleColorChange}
+                        onOpacityChange={handleOpacityChange}
                       />
                     </div>
                   )}
