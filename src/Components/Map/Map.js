@@ -19,6 +19,8 @@ const Map = () => {
     removedLayers,
     setLayerComponents,
     clearRemovedLayers,
+    setLayerColor,
+    layerStyles,
   } = useContext(LayersContext);
   const [removeLayerCounter, setRemoveLayerCounter] = useState(0);
   const mapLayersRef = useRef([]);
@@ -68,34 +70,87 @@ const Map = () => {
     );
   }, []);
 
-  //Store current layers
+  //renderer test
 
   useEffect(() => {
-    loadModules(["esri/layers/GeoJSONLayer"]).then(([GeoJSONLayer]) => {
-      //Check the current layers on the map, and if the current layer is no longer in the layerComponents array, delete the layer
-      mapLayersRef.current.forEach((layer) => {
-        if (!layerComponents.includes(layer.name)) {
-          mapView.map.remove(layer);
-        }
-      });
-
-      //Check the layer components array, and if there is a new layer in the list - add the new layer to the map
-      //Slice and reverse the list so the last element added to the list is rendered first, hence this layer will be on the bottom
-      layerComponents
-        .slice()
-        .reverse()
-        .forEach((layer) => {
-          if (
-            !mapLayersRef.current.find((layers) => layers.name === layer.name)
-          ) {
-            const newLayer = new GeoJSONLayer({
-              url: layer.url,
-            });
-            mapView.map.add(newLayer);
-            mapLayersRef.current.push(newLayer);
+    loadModules(["esri/layers/GeoJSONLayer", "esri/request"]).then(
+      ([GeoJSONLayer, esriRequest]) => {
+        // Check the current layers on the map, and if the current layer is no longer in the layerComponents array, delete the layer
+        mapLayersRef.current.forEach((layer) => {
+          if (!layerComponents.includes(layer.name)) {
+            mapView.map.remove(layer);
           }
         });
-    });
+
+        // Check the layer components array, and if there is a new layer in the list - add the new layer to the map
+        // Slice and reverse the list so the last element added to the list is rendered first, hence this layer will be on the bottom
+        layerComponents
+          .slice()
+          .reverse()
+          .forEach((layer) => {
+            if (
+              !mapLayersRef.current.find((layers) => layers.name === layer.name)
+            ) {
+              esriRequest(layer.url, {
+                responseType: "json",
+              }).then(function (response) {
+                const layerType = response.data.features[0].geometry.type;
+                console.log(layerType);
+
+                let renderer;
+                let symbol;
+
+                if (layerType === "Point") {
+                  renderer = {
+                    type: "simple",
+                    symbol: {
+                      type: "simple-marker",
+                      color: layer.color,
+                      outline: {
+                        color: layer.outlineColor,
+                        width: 1,
+                      },
+                    },
+                  };
+                } else if (
+                  layerType === "Polyline" ||
+                  layerType === "LineString"
+                ) {
+                  renderer = {
+                    type: "simple",
+                    symbol: {
+                      type: "simple-line",
+                      color: layer.color,
+                      width: 1,
+                    },
+                  };
+                } else if (layerType === "Polygon" || "MultiPolygon") {
+                  renderer = {
+                    type: "simple",
+                    symbol: {
+                      type: "simple-fill",
+                      color: layer.color,
+                      outline: {
+                        color: layer.outlineColor,
+                        width: 1,
+                      },
+                    },
+                  };
+                }
+
+                const newLayer = new GeoJSONLayer({
+                  url: layer.url,
+                  renderer: renderer,
+                });
+
+                newLayer.opacity = layer.opacity;
+                mapView.map.add(newLayer);
+                mapLayersRef.current.push(newLayer);
+              });
+            }
+          });
+      }
+    );
 
     console.log(layerComponents);
   }, [layerComponents]);

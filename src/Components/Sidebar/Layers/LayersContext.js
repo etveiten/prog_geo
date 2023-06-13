@@ -1,9 +1,10 @@
-import React, { createContext, useState } from "react";
+import React, { createContext, useState, useEffect } from "react";
 export const LayersContext = createContext({
   selectedLayers: [], // Set an initial value
   addLayer: () => {},
   removeLayer: () => {},
   setLayerColor: () => {},
+  setLayerOpacity: () => {},
   layerComponents: [],
   setLayerComponents: () => {},
   removedLayers: [],
@@ -14,6 +15,7 @@ export const LayersProvider = ({ children }) => {
   const [layerComponents, setLayerComponents] = useState([]);
   const [selectedLayers, setSelectedLayers] = useState([]);
   const [removedLayers, setRemovedLayers] = useState([]);
+  const [temporaryColors, setTemporaryColors] = useState({});
 
   const addLayer = (layer) => {
     if (!layerComponents.some((l) => l.name === layer.name)) {
@@ -49,9 +51,15 @@ export const LayersProvider = ({ children }) => {
   const setLayerColor = (layerName, color) => {
     setLayerComponents((prevComponents) =>
       prevComponents.map((component) =>
-        component.name === layerName
-          ? { ...component, color: color }
-          : component
+        component.name === layerName ? { ...component, color } : component
+      )
+    );
+  };
+
+  const setLayerOpacity = (layerName, opacity) => {
+    setLayerComponents((prevComponents) =>
+      prevComponents.map((component) =>
+        component.name === layerName ? { ...component, opacity } : component
       )
     );
   };
@@ -75,6 +83,7 @@ export const LayersProvider = ({ children }) => {
         setLayerColor,
         setLayerComponents: setLayerComponentsWrapper,
         removedLayers,
+        setLayerOpacity,
         clearRemovedLayers,
       }}
     >

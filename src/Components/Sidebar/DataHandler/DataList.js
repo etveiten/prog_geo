@@ -20,10 +20,24 @@ function DataList() {
     return selectedLayers && selectedLayers.includes(fileName);
   };
 
+  const generateRandomColor = () => {
+    const randomValue = () => Math.floor(Math.random() * 256);
+    const color = `#${randomValue().toString(16)}${randomValue().toString(
+      16
+    )}${randomValue().toString(16)}`;
+    return color;
+  };
+
   const handleAddLayer = (fileName) => {
     if (!isLayerSelected(fileName)) {
       const layerUrl = `http://127.0.0.1:8080/${fileName}.json`; // Construct the layer URL
-      addLayer({ name: fileName, url: layerUrl });
+      addLayer({
+        name: fileName,
+        url: layerUrl,
+        color: generateRandomColor(),
+        outlineColor: generateRandomColor(),
+        opacity: 1,
+      });
     } else {
       removeLayer(fileName);
     }
