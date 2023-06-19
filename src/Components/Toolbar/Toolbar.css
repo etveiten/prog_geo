@@ -1,3 +1,7 @@
+:root {
+  --icon-size: 20px; /* Initial value for icon size */
+}
+
 .toolbar-container{
     flex: 1;
     display: flex;
@@ -32,6 +36,12 @@
     padding-top: 1.2rem;
 }
 
+/* Add hover effect for icons */
+.component-button.tools-button:hover .tools-icon {
+  transform: scale(1.2); /* Set the desired scale value */
+}
+
+
 
 /* Update CSS for the overlapping button halves */
 .fold-button.half-left {
@@ -64,8 +74,8 @@
 }
 
 .tools-icon {
-  width: 20px; /* Set the desired width */
-  height: 20px; /* Set the desired height */
+  width: var(--icon-size); /* Set the desired width */
+  height: var(--icon-size); /* Set the desired height */
 }
 
 

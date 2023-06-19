@@ -91,7 +91,7 @@ const Map = () => {
         });
 
         /**
-         * TODO: Check if the order in the layercomponents are different than the mapsLayersRef -  then reorder the mapsLayersRef to the layerComponents. 
+         * !: Check if the order in the layercomponents are different than the mapsLayersRef -  then reorder the mapsLayersRef to the layerComponents. 
          */
         // Check the layer components array, and if there is a new layer in the list - add the new layer to the map
         // Slice and reverse the list so the last element added to the list is rendered first, hence this layer will be on the bottom

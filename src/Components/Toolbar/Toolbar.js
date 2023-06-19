@@ -12,7 +12,6 @@ import Difference from "./Difference";
 import Union from "./Union";
 import Intersect from "./Intersect";
 
-
 function Toolbar({ isToolsFolded, handleFoldButtonClick }) {
   const [activeComponent, setActiveComponent] = useState(null);
 
@@ -24,10 +23,10 @@ function Toolbar({ isToolsFolded, handleFoldButtonClick }) {
     setActiveComponent(null);
   };
 
-  useEffect(() => {
-    console.log("Active Component:", activeComponent);
-  }, [activeComponent]);
-
+  /**
+   * TODO: Add tooltips for the buttons
+   * 
+   */
   return (
     <div className={`toolbar-container ${isToolsFolded ? "folded" : ""}`}>
       <div className="toolbar-header">
@@ -85,9 +84,12 @@ function Toolbar({ isToolsFolded, handleFoldButtonClick }) {
       </div>
       <div className="tools-footer">
         {activeComponent && !isToolsFolded && (
-          <button className="component-button tools-button" onClick={clearActiveComponent}>
+          <button
+            className="component-button tools-button"
+            onClick={clearActiveComponent}
+          >
             <span className="icon">
-            <ToolsIcon className="tools-icon"/>
+              <ToolsIcon className="tools-icon" />
             </span>
           </button>
         )}
