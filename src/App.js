@@ -1,6 +1,7 @@
 import "./App.css";
 import Map from "./Components/Map/Map";
 import Sidebar from "./Components/Sidebar/Sidebar";
+import Toolbar from "./Components/Toolbar/Toolbar";
 import { useState } from "react";
 
 // Contexts
@@ -12,12 +13,17 @@ import { LayersProvider } from "./Components/Sidebar/Layers/LayersContext"; // U
 import {ReactComponent as ToolsIcon} from "./Icons/tools-svgrepo-com.svg";
 
 function App() {
-  const [isSidebarFolded, setIsSidebarFolded] = useState(false);
   const [isToolsFolded, setIsToolsFolded] = useState(true);
+  const [currentComponent, setCurrentComponent] = useState(null);
+
 
   const handleToolsFoldButtonClick = () => {
     setIsToolsFolded(!isToolsFolded);
   };
+
+  const handleToolComponentClick = (component) => {
+    setCurrentComponent(component);
+  }
 
 
   return (
@@ -34,17 +40,11 @@ function App() {
               <Map />
             </div>
             <div className={`tools-container ${isToolsFolded ? "folded" : ""}`}>
-              <button
-                className={`fold-button tools-button ${
-                  isToolsFolded ? "folded" : ""
-                }`}
-                onClick={handleToolsFoldButtonClick}
-              >
-                <span className="icon">
-                <ToolsIcon className="tools-icon" />
-                </span>
-              </button>
-              {/* Add your content for the tools container here */}
+              <Toolbar
+                isToolsFolded={isToolsFolded}
+                handleFoldButtonClick={handleToolsFoldButtonClick}
+                handleComponentButtonClick={handleToolComponentClick}
+              />
             </div>
           </div>
         </LayersProvider>

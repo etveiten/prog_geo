@@ -20,7 +20,7 @@
 
 .tools-container {
   flex-basis: 15%;/* Set the minimum width to 100% of the container */
-  background-color: #d9d9d9;
+  
   display: flex;
   transition: flex-basis 0.3s ease;
 }
@@ -36,52 +36,3 @@
   flex-basis: 2%; /* Update flex-basis when folded */
 }
 
-/* Update CSS for the sidebar button */
-.fold-button.sidebar-button {
-  
-
-}
-
-/* Update CSS for the tools button */
-.fold-button.tools-button {
-  position: absolute;
-  top: 50%;
-  transform: translate(-50%, -50%);
-  z-index: 2; /* Set a higher z-index for the button */
-}
-
-
-/* Update CSS for the overlapping button halves */
-.fold-button.half-left {
-  left: 0;
-  transform: translate(-50%, -50%) translateX(-50%);
-  z-index: 3; /* Set an even higher z-index for the half over the map container */
-}
-
-.fold-button.half-right {
-  left: 100%;
-  transform: translate(-50%, -50%) translateX(50%);
-  z-index: 3; /* Set an even higher z-index for the half over the map container */
-}
-
-/* Update CSS for the arrow icon */
-.icon {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px; /* Set the desired width */
-  height: 20px; /* Set the desired height */
-}
-
-.icon.left {
-  transform: rotate(180deg);
-}
-
-.icon.right {
-  transform: rotate(360deg);
-}
-
-.tools-icon {
-  width: 20px; /* Set the desired width */
-  height: 20px; /* Set the desired height */
-}
