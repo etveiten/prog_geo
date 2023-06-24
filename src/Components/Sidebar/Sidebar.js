@@ -4,101 +4,93 @@ import DataList from "./DataHandler/DataList";
 import LayersList from "./Layers/LayersList";
 import "./Sidebar.css";
 
+// Icons
+import { ReactComponent as MapIcon } from "../../Icons/map-svgrepo-com.svg";
+import { ReactComponent as DataIcon } from "../../Icons/files-svgrepo-com.svg";
+import { ReactComponent as LayersIcon } from "../../Icons/layers-filled-svgrepo-com.svg";
+import { ReactComponent as InfoIcon } from "../../Icons/info-filled-svgrepo-com.svg";
+
+// MUI
+import { Alert, IconButton } from "@mui/material";
+import Info from "@mui/icons-material/Info";
+import CloseIcon from "@mui/icons-material/Close";
+
 function Sidebar() {
-  const [selectedItem, setSelectedItem] = useState("map");
+  const [selectedItem, setSelectedItem] = useState(null);
+  const [showInfo, setShowInfo] = useState(false);
 
   const handleItemClick = (itemId) => {
-    setSelectedItem(itemId);
+    if (itemId === selectedItem) {
+      setSelectedItem(null); // Deselect the item if it's already selected
+    } else {
+      setSelectedItem(itemId);
+    }
   };
 
-  //Here i will return the future components
-  const renderSelectedContent = () => {
-    switch (selectedItem) {
-      case "map":
-        return <MapSettings />;
-      case "data":
-        return <DataList />;
-      case "layers":
-        return <LayersList />;
-      case "tools":
-        return <h1>Tools Content</h1>;
-      case "search":
-        return <h1>Search Content</h1>;
-      case "tutorial":
-        return <h1>Tutorial Content</h1>;
-      case "about":
-        return <h1>About Content</h1>;
-      default:
-        return null;
-    }
+  const handleInfoClick = () => {
+    setShowInfo(!showInfo);
   };
 
   return (
     <div className="sidebar">
       <div className="sidebar-header">
-        <h2>Your first GIS</h2>
+        <h3>GIS - made simple</h3>
       </div>
       <div className="sidebar-options">
-        <ul className="sidebar-options-list">
-          <li
-            className={`sidebar-options-list-item ${
+        <div className="sidebar-buttons">
+          <div
+            className={`sidebar-option ${
               selectedItem === "map" ? "selected" : ""
             }`}
             onClick={() => handleItemClick("map")}
           >
+            <MapIcon className="sidebar-icon" />
             Map
-          </li>
-          <li
-            className={`sidebar-options-list-item ${
+          </div>
+          <div
+            className={`sidebar-option ${
               selectedItem === "data" ? "selected" : ""
             }`}
             onClick={() => handleItemClick("data")}
           >
+            <DataIcon className="sidebar-icon" />
             Data
-          </li>
-          <li
-            className={`sidebar-options-list-item ${
-              selectedItem === "layers" ? "selected" : ""
-            }`}
-            onClick={() => handleItemClick("layers")}
-          >
-            Layers
-          </li>
-          <li
-            className={`sidebar-options-list-item ${
-              selectedItem === "tools" ? "selected" : ""
-            }`}
-            onClick={() => handleItemClick("tools")}
-          >
-            Tools
-          </li>
-          <li
-            className={`sidebar-options-list-item ${
-              selectedItem === "search" ? "selected" : ""
-            }`}
-            onClick={() => handleItemClick("search")}
-          >
-            Search
-          </li>
-          <li
-            className={`sidebar-options-list-item ${
-              selectedItem === "tutorial" ? "selected" : ""
-            }`}
-            onClick={() => handleItemClick("tutorial")}
-          >
-            Tutorial
-          </li>
-          <li
-            className={`sidebar-options-list-item ${
-              selectedItem === "about" ? "selected" : ""
-            }`}
-            onClick={() => handleItemClick("about")}
-          >
-            About
-          </li>
-        </ul>
+          </div>
+        </div>
+        <div className="sidebar-content">
+          {selectedItem === "map" && <MapSettings />}
+          {selectedItem === "data" && <DataList />}
+          {selectedItem === null && <p>Select an option from the sidebar.</p>}
+        </div>
       </div>
-      <div className="sidebar-selected-option">{renderSelectedContent()}</div>
+      <div className="sidebar-selected-option">
+        <div className="sidebar-layers-header">
+          <LayersIcon className="sidebar-icon" />
+          <h4>Layers</h4>
+          <IconButton onClick={handleInfoClick}>
+            <InfoIcon className="sidebar-icon" />
+          </IconButton>
+        </div>
+
+        <LayersList />
+      </div>
+      {showInfo && (
+        <Alert
+          severity="info"
+          action={
+            <IconButton
+              aria-label="close"
+              color="inherit"
+              size="small"
+              onClick={handleInfoClick}
+            >
+              <CloseIcon fontSize="inherit" />
+            </IconButton>
+          }
+        >
+          Here are the current layers of the map. You can style each layer by adjusting the color or opacity options. Re-order the layers by dragging a layer to a new place in the list.
+        </Alert>
+      )}
     </div>
   );
 }
