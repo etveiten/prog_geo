@@ -1,5 +1,5 @@
-import React, { useContext, useState } from "react";
-import { LayersContext } from "./LayersContext";
+import React, { useContext, useState } from 'react';
+import { LayersContext } from './LayersContext';
 
 const Layer = ({
   name,
@@ -19,19 +19,13 @@ const Layer = ({
 
   const handleColorChange = () => {
     onColorChange(name, tempColor);
+    setLayerColor(name, tempColor); // Update the layer color in LayersContext
   };
 
   const handleOpacityChange = (e) => {
     const newOpacity = parseFloat(e.target.value);
     setTempOpacity(newOpacity);
-  };
-
-  const handleUpdateOpacity = () => {
-    onOpacityChange(name, tempOpacity);
-  };
-
-  const handleUpdateColor = () => {
-    onColorChange(name, tempColor);
+    onOpacityChange(name, newOpacity);
   };
 
   return (
@@ -41,9 +35,9 @@ const Layer = ({
         type="color"
         value={tempColor}
         onChange={(e) => setTempColor(e.target.value)}
-        onMouseUp={handleUpdateColor}
+        onBlur={handleColorChange}
       />
-      <button onClick={handleRemoveLayer}>RM</button>
+      <button onClick={handleRemoveLayer}>Remove</button>
       <input
         type="range"
         min={0}
@@ -51,7 +45,6 @@ const Layer = ({
         step={0.01}
         value={tempOpacity}
         onChange={handleOpacityChange}
-        onMouseUp={handleUpdateOpacity}
       />
     </div>
   );
