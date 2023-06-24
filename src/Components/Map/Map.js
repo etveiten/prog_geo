@@ -33,9 +33,9 @@ const Map = () => {
       "esri/config",
       "esri/widgets/BasemapGallery",
       "esri/widgets/Expand",
-      "esri/layers/GeoJSONLayer",
+      "esri/widgets/LayerList",
     ]).then(
-      ([Map, MapView, esriConfig, BasemapGallery, Expand, GeoJSONLayer]) => {
+      ([Map, MapView, esriConfig, BasemapGallery, Expand, LayerList]) => {
         esriConfig.apiKey =
           "AAPKaa88b9bc82a2443abfc17d119fa2de0bbjjSaYOLrxHZmTwJP1vouhBEgG1cxrogX0vZ_0taM8X5pq8ALVy4Fraf27KFZOVx";
 
@@ -62,6 +62,14 @@ const Map = () => {
           }),
         });
 
+        let layerList = new LayerList({
+          view: view
+        });
+        // Adds widget below other elements in the top left corner of the view
+        view.ui.add(layerList, {
+          position: "bottom-left"
+        });
+
         view.ui.add(bgExpand, "top-right");
         view.when(() => {
           setMapView(view);
@@ -82,6 +90,9 @@ const Map = () => {
           }
         });
 
+        /**
+         * !: Check if the order in the layercomponents are different than the mapsLayersRef -  then reorder the mapsLayersRef to the layerComponents. 
+         */
         // Check the layer components array, and if there is a new layer in the list - add the new layer to the map
         // Slice and reverse the list so the last element added to the list is rendered first, hence this layer will be on the bottom
         layerComponents

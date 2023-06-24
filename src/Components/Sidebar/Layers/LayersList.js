@@ -28,7 +28,6 @@ const LayersList = () => {
 
   return (
     <div>
-      <h1>Layers List</h1>
       <DragDropContext onDragEnd={handleDragEnd}>
         <StrictModeDroppable droppableId="layers-list" className="layers-list">
           {(provided) => (

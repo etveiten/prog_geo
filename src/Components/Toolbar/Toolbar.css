@@ -1,0 +1,124 @@
+:root {
+  --icon-size: 20px; /* Initial value for icon size */
+}
+
+.toolbar-container {
+  position: relative;
+  flex: 1;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  background-color: #f0f0f0;
+  justify-content: center;
+}
+
+.toolbar-header {
+  flex: 10%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border: 2px solid black;
+  height: 100%;
+  width: 100%;
+}
+
+.toolbar-body {
+  flex: 85%;
+  margin-bottom: 8rem;
+  margin-top: 5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.tools-footer {
+  flex: 5%;
+}
+
+/* Add hover effect for icons */
+.component-button.tools-button:not(#fold-button):hover .tools-icon {
+  transform: scale(1.2); /* Set the desired scale value */
+}
+
+/* Update CSS for the arrow icon */
+.icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px; /* Set the desired width */
+  height: 20px; /* Set the desired height */
+}
+
+.tools-icon {
+  width: var(--icon-size); /* Set the desired width */
+  height: var(--icon-size); /* Set the desired height */
+}
+
+.info-icon{
+  width: var(--icon-size);
+  height: var(--icon-size);
+}
+
+.tools-icon.folded {
+  transform: rotate(180deg);
+}
+
+.component-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 100%;
+}
+ 
+
+
+.component-title {
+  margin-top: 0.5rem;
+}
+
+.component-button {
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  width: var(--icon-size); /* Set the desired width */
+  height: var(--icon-size);
+}
+
+.component-button .icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%; /* Adjust to fill the container */
+  height: 100%; /* Adjust to fill the container */
+}
+
+.info-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 2;
+}
+
+.info-container .MuiAlert-root {
+  margin: 0;
+  border-radius: 0;
+}
+
+#fold-icon {
+  rotate: 90deg;
+}
+
+.folded .component-block .component-title,
+.folded .component-block .info-icon {
+  display: none;
+}
+
+.title-info{
+  display: flex;
+  flex-direction: row;
+}
