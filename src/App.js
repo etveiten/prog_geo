@@ -10,12 +10,14 @@ import { MapSettingsProvider } from "./Components/Sidebar/MapSettings/MapSetting
 import { LayersProvider } from "./Components/Sidebar/Layers/LayersContext"; // Updated import
 
 //Add icons
-import {ReactComponent as ToolsIcon} from "./Icons/tools-svgrepo-com.svg";
+import { ReactComponent as ToolsIcon } from "./Icons/tools-svgrepo-com.svg";
+
+//Test
+import MapBox from "./Components/Map/MapBox";
 
 function App() {
   const [isToolsFolded, setIsToolsFolded] = useState(true);
   const [currentComponent, setCurrentComponent] = useState(null);
-
 
   const handleToolsFoldButtonClick = () => {
     setIsToolsFolded(!isToolsFolded);
@@ -23,21 +25,21 @@ function App() {
 
   const handleToolComponentClick = (component) => {
     setCurrentComponent(component);
-  }
-
+  };
 
   return (
     <MapProvider>
       <MapSettingsProvider>
         <LayersProvider>
           <div className="App">
-            <div
-              className="sidebar-container"
-            >
+            <div className="sidebar-container">
               <Sidebar />
             </div>
             <div className="map-container">
-              <Map />
+              {/*
+             <Map/>
+             */}
+              <MapBox/>
             </div>
             <div className={`tools-container ${isToolsFolded ? "folded" : ""}`}>
               <Toolbar

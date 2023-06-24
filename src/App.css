@@ -11,7 +11,7 @@
   position: relative;
   display: flex;
   transition: flex-basis 0.3s ease; /* Add transition for smooth animation */
-  border : 2px solid red;
+  border: 2px solid red;
 }
 
 .sidebar-container.folded {
@@ -19,20 +19,21 @@
 }
 
 .tools-container {
-  flex-basis: 15%;/* Set the minimum width to 100% of the container */
-  
+  flex-basis: 15%; /* Set the minimum width to 100% of the container */
+
   display: flex;
   transition: flex-basis 0.3s ease;
 }
 
+.content-container {
+  flex: 1; /* Let the content container take the remaining space */
+  display: flex;
+}
 
 .map-container {
   flex: 1; /* Let the map container take the remaining space */
 }
 
-
-
 .tools-container.folded {
   flex-basis: 2%; /* Update flex-basis when folded */
 }
-
