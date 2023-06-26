@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import MapSettings from "./MapSettings/MapSettings";
 import DataList from "./DataHandler/DataList";
 import LayersList from "./Layers/LayersList";
 import "./Sidebar.css";
@@ -15,6 +14,7 @@ import { Alert, IconButton } from "@mui/material";
 import Info from "@mui/icons-material/Info";
 import CloseIcon from "@mui/icons-material/Close";
 
+// Just the sidebar in the application, first and formost an organizer for further components
 function Sidebar() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [showInfo, setShowInfo] = useState(false);
@@ -38,15 +38,7 @@ function Sidebar() {
       </div>
       <div className="sidebar-options">
         <div className="sidebar-buttons">
-          <div
-            className={`sidebar-option ${
-              selectedItem === "map" ? "selected" : ""
-            }`}
-            onClick={() => handleItemClick("map")}
-          >
-            <MapIcon className="sidebar-icon" />
-            Map
-          </div>
+        
           <div
             className={`sidebar-option ${
               selectedItem === "data" ? "selected" : ""
@@ -58,9 +50,7 @@ function Sidebar() {
           </div>
         </div>
         <div className="sidebar-content">
-          {selectedItem === "map" && <MapSettings />}
-          {selectedItem === "data" && <DataList />}
-          {selectedItem === null && <p>Select an option from the sidebar.</p>}
+            <DataList/>
         </div>
       </div>
       <div className="sidebar-selected-option">
