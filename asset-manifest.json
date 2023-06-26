@@ -1,0 +1,26 @@
+{
+  "files": {
+    "main.css": "/prog_geo/static/css/main.f8dd0d27.css",
+    "main.js": "/prog_geo/static/js/main.57b9e500.js",
+    "static/js/787.8dfefb61.chunk.js": "/prog_geo/static/js/787.8dfefb61.chunk.js",
+    "static/media/map-svgrepo-com.svg": "/prog_geo/static/media/map-svgrepo-com.3075a1a4c2151ba84924be7731c73d43.svg",
+    "static/media/opacity-svgrepo-com.svg": "/prog_geo/static/media/opacity-svgrepo-com.9f59af222f1357ac778711de44450dbb.svg",
+    "static/media/color-palette-svgrepo-com.svg": "/prog_geo/static/media/color-palette-svgrepo-com.d9952d46b5da8f0a5182180c8129966c.svg",
+    "static/media/layers-filled-svgrepo-com.svg": "/prog_geo/static/media/layers-filled-svgrepo-com.4cecbce532d79fe474b4e812fcdf0fbb.svg",
+    "static/media/add-plus-square-svgrepo-com.svg": "/prog_geo/static/media/add-plus-square-svgrepo-com.1f97c9f4191ab822ff956ef50797cbdd.svg",
+    "static/media/tools-svgrepo-com.svg": "/prog_geo/static/media/tools-svgrepo-com.bbdbd2093533a67a122b8d7c5ccd02c5.svg",
+    "static/media/checkmark-square-svgrepo-com.svg": "/prog_geo/static/media/checkmark-square-svgrepo-com.4a07af109a01ccc27e92944134d56a4e.svg",
+    "static/media/info-filled-svgrepo-com.svg": "/prog_geo/static/media/info-filled-svgrepo-com.9beac1c431bba7a330534e85663fc1ff.svg",
+    "static/media/files-svgrepo-com.svg": "/prog_geo/static/media/files-svgrepo-com.0b6c1b6ca6329d92568b42432bf07fc9.svg",
+    "index.html": "/prog_geo/index.html",
+    "static/media/remove-circle-svgrepo-com.svg": "/prog_geo/static/media/remove-circle-svgrepo-com.04cdca6092ce4507b4bc83b916df2b3e.svg",
+    "static/media/fold-down-svgrepo-com.svg": "/prog_geo/static/media/fold-down-svgrepo-com.1fd08b1e6b64f88c17d424a2586026ba.svg",
+    "main.f8dd0d27.css.map": "/prog_geo/static/css/main.f8dd0d27.css.map",
+    "main.57b9e500.js.map": "/prog_geo/static/js/main.57b9e500.js.map",
+    "787.8dfefb61.chunk.js.map": "/prog_geo/static/js/787.8dfefb61.chunk.js.map"
+  },
+  "entrypoints": [
+    "static/css/main.f8dd0d27.css",
+    "static/js/main.57b9e500.js"
+  ]
+}
