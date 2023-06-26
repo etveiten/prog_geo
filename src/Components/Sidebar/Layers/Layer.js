@@ -1,51 +1,27 @@
-import React, { useContext, useState } from 'react';
-import { LayersContext } from './LayersContext';
+import React, { useContext } from "react";
+import "./Layer.css";
+import { LayersContext } from "./LayersContext";
 
-const Layer = ({
-  name,
-  color,
-  outlineColor,
-  opacity,
-  onColorChange,
-  onOpacityChange,
-}) => {
+
+//MUI
+import { IconButton } from "@mui/material";
+
+//A layer is just holding the name that can be used as id
+
+const Layer = ({ name, color, onColorChange }) => {
   const { removeLayer, setLayerColor } = useContext(LayersContext);
-  const [tempColor, setTempColor] = useState(color);
-  const [tempOpacity, setTempOpacity] = useState(opacity);
 
   const handleRemoveLayer = () => {
     removeLayer(name);
   };
 
-  const handleColorChange = () => {
-    onColorChange(name, tempColor);
-    setLayerColor(name, tempColor); // Update the layer color in LayersContext
-  };
-
-  const handleOpacityChange = (e) => {
-    const newOpacity = parseFloat(e.target.value);
-    setTempOpacity(newOpacity);
-    onOpacityChange(name, newOpacity);
+  const handleColorChange = (newColor) => {
+    onColorChange(name, newColor);
   };
 
   return (
-    <div>
+    <div className="layer-container">
       <span>{name}</span>
-      <input
-        type="color"
-        value={tempColor}
-        onChange={(e) => setTempColor(e.target.value)}
-        onBlur={handleColorChange}
-      />
-      <button onClick={handleRemoveLayer}>Remove</button>
-      <input
-        type="range"
-        min={0}
-        max={1}
-        step={0.01}
-        value={tempOpacity}
-        onChange={handleOpacityChange}
-      />
     </div>
   );
 };

@@ -1,12 +1,10 @@
 import "./App.css";
-import Map from "./Components/Map/Map";
+
 import Sidebar from "./Components/Sidebar/Sidebar";
 import Toolbar from "./Components/Toolbar/Toolbar";
 import { useState } from "react";
 
 // Contexts
-import { MapProvider } from "./Components/Map/MapContext";
-import { MapSettingsProvider } from "./Components/Sidebar/MapSettings/MapSettingsContext";
 import { LayersProvider } from "./Components/Sidebar/Layers/LayersContext"; // Updated import
 
 //Add icons
@@ -16,9 +14,12 @@ import { ReactComponent as ToolsIcon } from "./Icons/tools-svgrepo-com.svg";
 import MapBox from "./Components/Map/MapBox";
 
 function App() {
+
+  //States for the app
   const [isToolsFolded, setIsToolsFolded] = useState(true);
   const [currentComponent, setCurrentComponent] = useState(null);
 
+  //Fold tools container
   const handleToolsFoldButtonClick = () => {
     setIsToolsFolded(!isToolsFolded);
   };
@@ -28,17 +29,15 @@ function App() {
   };
 
   return (
-    <MapProvider>
-      <MapSettingsProvider>
+
+
         <LayersProvider>
           <div className="App">
             <div className="sidebar-container">
               <Sidebar />
             </div>
             <div className="map-container">
-              {/*
-             <Map/>
-             */}
+
               <MapBox/>
             </div>
             <div className={`tools-container ${isToolsFolded ? "folded" : ""}`}>
@@ -50,8 +49,7 @@ function App() {
             </div>
           </div>
         </LayersProvider>
-      </MapSettingsProvider>
-    </MapProvider>
+
   );
 }
 

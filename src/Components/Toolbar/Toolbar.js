@@ -1,11 +1,5 @@
 import "./Toolbar.css";
 import { ReactComponent as FoldIcon } from "../../Icons/fold-down-svgrepo-com.svg";
-import { ReactComponent as BufferIcon } from "../../Icons/buffer-svgrepo-com.svg";
-import { ReactComponent as DifferenceIcon } from "../../Icons/difference-svgrepo-com.svg";
-import { ReactComponent as IntersectIcon } from "../../Icons/intersect-svgrepo-com.svg";
-import { ReactComponent as UnionIcon } from "../../Icons/union-svgrepo-com.svg";
-import { ReactComponent as ToolsIcon } from "../../Icons/tools-svgrepo-com.svg";
-import { ReactComponent as InfoIcon } from "../../Icons/info-filled-svgrepo-com.svg";
 import { useEffect, useState } from "react";
 
 import Buffer from "./Buffer";
@@ -13,9 +7,12 @@ import Difference from "./Difference";
 import Union from "./Union";
 import Intersect from "./Intersect";
 
+import { ReactComponent as ToolsIcon } from "../../Icons/tools-svgrepo-com.svg";
+
+
 // MUI
 import { Alert, IconButton } from "@mui/material";
-import Info from "@mui/icons-material/Info";
+import InfoIcon from "@mui/icons-material/Info";
 import CloseIcon from "@mui/icons-material/Close";
 
 import {
@@ -25,6 +22,8 @@ import {
   unionInfoMessage,
   toolsInfoMessage,
 } from "../../Utils/InfoMessages.js";
+
+//Toolbar that holds the geomspatial tools
 
 function Toolbar({ isToolsFolded, handleFoldButtonClick }) {
   const [activeComponent, setActiveComponent] = useState(null);
@@ -65,98 +64,22 @@ function Toolbar({ isToolsFolded, handleFoldButtonClick }) {
       </div>
 
       <div className="toolbar-body">
-        {!isToolsFolded && activeComponent ? (
-          activeComponent
-        ) : (
+        {!isToolsFolded && (
           <>
             <div className="component-block">
-              {!isToolsFolded && (
-                <div className="title-info">
-                  <div className="component-title">Buffer</div>
-                  <IconButton
-                    onClick={() => handleInfoClick(bufferInfoMessage)}
-                  >
-                    <InfoIcon className="info-icon" />
-                  </IconButton>
-                </div>
-              )}
-              <div className="icon-button">
-                <button
-                  className="component-button tools-button"
-                  onClick={() => handleComponentButtonClick(<Buffer />)}
-                >
-                  <span className="icon">
-                    <BufferIcon className="tools-icon" />
-                  </span>
-                </button>
-              </div>
+              <Buffer />
             </div>
 
             <div className="component-block">
-              {!isToolsFolded && (
-                <div className="title-info">
-                  <div className="component-title">Difference</div>
-                  <IconButton
-                    onClick={() => handleInfoClick(differenceInfoMessage)}
-                  >
-                    <InfoIcon className="info-icon" />
-                  </IconButton>
-                </div>
-              )}
-              <div className="icon-button">
-                <button
-                  className="component-button tools-button"
-                  onClick={() => handleComponentButtonClick(<Difference />)}
-                >
-                  <span className="icon">
-                    <DifferenceIcon className="tools-icon" />
-                  </span>
-                </button>
-              </div>
+              <Difference />
             </div>
 
             <div className="component-block">
-              {!isToolsFolded && (
-                <div className="title-info">
-                  <div className="component-title">Intersect</div>
-                  <IconButton
-                    onClick={() => handleInfoClick(intersectInfoMessage)}
-                  >
-                    <InfoIcon className="info-icon" />
-                  </IconButton>
-                </div>
-              )}
-              <div className="icon-button">
-                <button
-                  className="component-button tools-button"
-                  onClick={() => handleComponentButtonClick(<Intersect />)}
-                >
-                  <span className="icon">
-                    <IntersectIcon className="tools-icon" />
-                  </span>
-                </button>
-              </div>
+              <Intersect />
             </div>
 
             <div className="component-block">
-              {!isToolsFolded && (
-                <div className="title-info">
-                  <div className="component-title">Union</div>
-                  <IconButton onClick={() => handleInfoClick(unionInfoMessage)}>
-                    <InfoIcon className="info-icon" />
-                  </IconButton>
-                </div>
-              )}
-              <div className="icon-button">
-                <button
-                  className="component-button tools-button"
-                  onClick={() => handleComponentButtonClick(<Union />)}
-                >
-                  <span className="icon">
-                    <UnionIcon className="tools-icon" />
-                  </span>
-                </button>
-              </div>
+              <Union />
             </div>
           </>
         )}
@@ -178,7 +101,6 @@ function Toolbar({ isToolsFolded, handleFoldButtonClick }) {
       {infoMessage && (
         <div className="info-container">
           <Alert
-            
             severity="info"
             action={
               <IconButton

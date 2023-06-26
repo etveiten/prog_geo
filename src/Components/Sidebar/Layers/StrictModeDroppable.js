@@ -1,4 +1,5 @@
 //helper file to use a package in strict mode
+
 import { useEffect, useState } from "react";
 import { Droppable } from "react-beautiful-dnd";
 export const StrictModeDroppable = ({ children, ...props }) => {

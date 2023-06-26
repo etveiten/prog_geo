@@ -1,51 +1,98 @@
-import React, { useState, useEffect, useContext } from "react";
+import React, { useState, useEffect, useContext, useMemo } from "react";
 import { LayersContext } from "../Layers/LayersContext";
+import "./DataList.css";
+import { lineStringToPolygon } from "@turf/turf";
+
+// Import icons
+import { ReactComponent as AddIcon } from "../../../Icons/add-plus-square-svgrepo-com.svg";
+import { ReactComponent as CheckIcon } from "../../../Icons/checkmark-square-svgrepo-com.svg";
 
 function DataList() {
   // Context methods for the Layers
-  const { addLayer, removeLayer, selectedLayers } = useContext(LayersContext);
+  const { addLayer, removeLayer, selectedLayers, layerComponents } =
+    useContext(LayersContext);
   const [dataFiles, setDataFiles] = useState([]);
+  const [itemColors, setItemColors] = useState({});
 
+  //Update the localstorage every time a layerComponent is changed
   useEffect(() => {
     const storedDataFiles = Object.keys(localStorage);
     setDataFiles(storedDataFiles);
-  }, []);
+  }, [layerComponents]);
 
+  //Update the colors of the items in the list
+  useEffect(() => {
+    const newColors = {};
+    layerComponents.forEach((layer) => {
+      newColors[layer.name] = layer.color;
+    });
+    setItemColors(newColors);
+  }, [layerComponents]);
+
+  //Check if the layer is selected
   const isLayerSelected = (fileName) => {
-    return selectedLayers && selectedLayers.includes(fileName);
+    return (
+      (selectedLayers && selectedLayers.includes(fileName)) ||
+      layerComponents.some((layer) => layer.name === fileName)
+    );
   };
-
+  //Generate radnom color for the first render
   const generateRandomColor = () => {
     const randomValue = () => Math.floor(Math.random() * 256);
-    const color = `#${randomValue().toString(16).padStart(2, '0')}${randomValue().toString(16).padStart(2, '0')}${randomValue().toString(16).padStart(2, '0')}`;
+    const color = `#${randomValue()
+      .toString(16)
+      .padStart(2, "0")}${randomValue()
+      .toString(16)
+      .padStart(2, "0")}${randomValue().toString(16).padStart(2, "0")}`;
     return color;
   };
 
+  //Logic for adding a layer to the map. If its not selected, the item, aka object with data
+  //is procecced and added to the map.
   const handleAddLayer = (fileName) => {
     if (!isLayerSelected(fileName)) {
       const fileData = localStorage.getItem(fileName);
       const extension = fileName.split(".").pop().toLowerCase();
       let layerUrl;
-
+      let layerColor = "";
+  
       if (extension === "json" || extension === "geojson") {
-        layerUrl = URL.createObjectURL(new Blob([fileData]));
+        const jsonData = JSON.parse(fileData);
+        if (jsonData.features && jsonData.features.length > 0) {
+          const geometryType = jsonData.features[0].geometry.type;
+          layerUrl = URL.createObjectURL(new Blob([fileData]));
+          layerColor = generateRandomColor();
+          addLayer({
+            name: fileName,
+            url: layerUrl,
+            color: layerColor,
+            outlineColor: generateRandomColor(),
+            opacity: 1,
+            type: geometryType, // Set the layer type based on the first feature's geometry type
+          });
+        }
       } else if (extension === "shp") {
         // Handle Shapefile here (if needed)
       }
-
+  
+      //Handle the url for a localStorage item and set colors
       if (layerUrl) {
-        addLayer({
-          name: fileName,
-          url: layerUrl,
-          color: generateRandomColor(),
-          outlineColor: generateRandomColor(),
-          opacity: 1,
-        });
+        setItemColors((prevColors) => ({
+          ...prevColors,
+          [fileName]: layerColor,
+        }));
       }
     } else {
       removeLayer(fileName);
+      setItemColors((prevColors) => {
+        const updatedColors = { ...prevColors };
+        delete updatedColors[fileName];
+        return updatedColors;
+      });
     }
   };
+
+  //Code for dropping files into the filedropper
 
   const handleDrop = (event) => {
     event.preventDefault();
@@ -62,38 +109,70 @@ function DataList() {
     });
   };
 
+
   const handleDragOver = (event) => {
     event.preventDefault();
   };
 
+  //Check if the files are of valid types. I have defied this to be json and geojson
   const isValidFile = (fileName) => {
     const validExtensions = ["json", "geojson", "shp"];
     const extension = fileName.split(".").pop().toLowerCase();
     return validExtensions.includes(extension);
   };
 
+  const getItemColors = useMemo(() => {
+    const colors = {};
+    layerComponents.forEach((layer) => {
+      colors[layer.name] = layer.color;
+    });
+    return colors;
+  }, [layerComponents]);
+
   return (
-    <div>
-      <h1>Data List</h1>
+    <div className="data-container">
       <div
+        className="data-files-dropzone"
         onDrop={handleDrop}
         onDragOver={handleDragOver}
         style={{
           border: "1px solid #ccc",
           padding: "20px",
           marginBottom: "20px",
+          width: "80%",
+          height: "100px",
         }}
       >
-        Drop files here
+        <span className="data-files-dropzone-text">
+          Drag and drop JSON or GeoJSON files here
+        </span>
       </div>
-      <ul>
+      <ul className="data-files-list">
         {dataFiles.map((fileName) => {
           if (isValidFile(fileName)) {
+            const itemColor = getItemColors[fileName] || "transparent";
+            const itemColorWithAlpha = `${itemColor}30`; // Add alpha value (30 in hex is equivalent to 0.3 in decimal)
             return (
-              <li key={fileName}>
-                {fileName}
-                <button onClick={() => handleAddLayer(fileName)}>
-                  {isLayerSelected(fileName) ? "Remove Layer" : "Add Layer"}
+              <li key={fileName} className="data-files-item">
+                <span className="data-file-name">{fileName}</span>
+                <button
+                  className="add-button"
+                  onClick={
+                    !isLayerSelected(fileName)
+                      ? () => handleAddLayer(fileName)
+                      : null
+                  }
+                  style={{
+                    backgroundColor: isLayerSelected(fileName)
+                      ? itemColorWithAlpha
+                      : "transparent",
+                  }}
+                >
+                  {isLayerSelected(fileName) ? (
+                    <CheckIcon width="20px" height="20px" />
+                  ) : (
+                    <AddIcon width="20px" height="20px" />
+                  )}
                 </button>
               </li>
             );

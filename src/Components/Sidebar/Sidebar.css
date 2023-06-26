@@ -70,6 +70,11 @@
 }
 
 .sidebar-selected-option {
+  display:flex;
+  flex-direction: column;
   padding: 0.2rem;
   background-color: #e0e0e0;
+  max-height: 50%;
+  overflow-y: auto;
 }
+
