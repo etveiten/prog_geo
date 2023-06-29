@@ -1,8 +1,8 @@
 {
   "files": {
-    "main.css": "/prog_geo/static/css/main.f8dd0d27.css",
-    "main.js": "/prog_geo/static/js/main.57b9e500.js",
-    "static/js/787.8dfefb61.chunk.js": "/prog_geo/static/js/787.8dfefb61.chunk.js",
+    "main.css": "/prog_geo/static/css/main.f66dd13c.css",
+    "main.js": "/prog_geo/static/js/main.0e4fa219.js",
+    "static/js/787.7bf1e5ad.chunk.js": "/prog_geo/static/js/787.7bf1e5ad.chunk.js",
     "static/media/map-svgrepo-com.svg": "/prog_geo/static/media/map-svgrepo-com.3075a1a4c2151ba84924be7731c73d43.svg",
     "static/media/opacity-svgrepo-com.svg": "/prog_geo/static/media/opacity-svgrepo-com.9f59af222f1357ac778711de44450dbb.svg",
     "static/media/color-palette-svgrepo-com.svg": "/prog_geo/static/media/color-palette-svgrepo-com.d9952d46b5da8f0a5182180c8129966c.svg",
@@ -15,12 +15,12 @@
     "index.html": "/prog_geo/index.html",
     "static/media/remove-circle-svgrepo-com.svg": "/prog_geo/static/media/remove-circle-svgrepo-com.04cdca6092ce4507b4bc83b916df2b3e.svg",
     "static/media/fold-down-svgrepo-com.svg": "/prog_geo/static/media/fold-down-svgrepo-com.1fd08b1e6b64f88c17d424a2586026ba.svg",
-    "main.f8dd0d27.css.map": "/prog_geo/static/css/main.f8dd0d27.css.map",
-    "main.57b9e500.js.map": "/prog_geo/static/js/main.57b9e500.js.map",
-    "787.8dfefb61.chunk.js.map": "/prog_geo/static/js/787.8dfefb61.chunk.js.map"
+    "main.f66dd13c.css.map": "/prog_geo/static/css/main.f66dd13c.css.map",
+    "main.0e4fa219.js.map": "/prog_geo/static/js/main.0e4fa219.js.map",
+    "787.7bf1e5ad.chunk.js.map": "/prog_geo/static/js/787.7bf1e5ad.chunk.js.map"
   },
   "entrypoints": [
-    "static/css/main.f8dd0d27.css",
-    "static/js/main.57b9e500.js"
+    "static/css/main.f66dd13c.css",
+    "static/js/main.0e4fa219.js"
   ]
 }
