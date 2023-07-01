@@ -13,6 +13,12 @@ import { ReactComponent as ToolsIcon } from "./Icons/tools-svgrepo-com.svg";
 //Test
 import MapBox from "./Components/Map/MapBox";
 
+//DB
+import { DBConfig } from "./Database/DBConfig";
+import { initDB } from "react-indexed-db-hook";
+
+initDB(DBConfig);
+
 function App() {
 
   //States for the app

@@ -4,6 +4,8 @@ import { LayersContext } from "../Sidebar/Layers/LayersContext";
 import { convertToPolygon } from "../../Utils/convertData";
 import Alert from "@mui/material/Alert";
 import "./Intersect.css";
+import { useIndexedDB } from "react-indexed-db-hook";
+
 function Intersect() {
   const [dataFiles, setDataFiles] = useState([]);
   const [selectedFile1, setSelectedFile1] = useState("");
@@ -11,11 +13,18 @@ function Intersect() {
   const [intersectData, setIntersectData] = useState(null);
 
   const { addLayer, layerComponents } = useContext(LayersContext);
+  const { add, getAll, getByIndex} = useIndexedDB("files");
 
-  //Listen to new layers 
+  //Refresh the datalist every time a layerComponent is changed
+
   useEffect(() => {
-    const storedDataFiles = Object.keys(localStorage);
-    setDataFiles(storedDataFiles);
+    const fetchData = async () => {
+      const data = await getAll();
+      const dataFiles = data.map((item) => item.name);
+      setDataFiles(dataFiles);
+    };
+
+    fetchData();
   }, [layerComponents]);
 
   const handleFile1Select = (event) => {
@@ -27,12 +36,13 @@ function Intersect() {
   };
 
   //Sort of the same as buffer, Did reuse most of the components 
-  const handleIntersection = () => {
+  const handleIntersection = async () => {
     if (selectedFile1 && selectedFile2) {
-      const fileData1 = localStorage.getItem(selectedFile1);
-      const fileData2 = localStorage.getItem(selectedFile2);
-      const jsonData1 = JSON.parse(fileData1);
-      const jsonData2 = JSON.parse(fileData2);
+      const fileData1 = await getByIndex("name", selectedFile1);
+      const fileData2 = await getByIndex("name", selectedFile2);
+      
+      const jsonData1 = JSON.parse(fileData1.data);
+      const jsonData2 = JSON.parse(fileData2.data);
 
       const poly1 = convertToPolygon(jsonData1);
       const poly2 = convertToPolygon(jsonData2);
@@ -42,7 +52,7 @@ function Intersect() {
         setIntersectData(intersection);
 
         const fileName = `intersected_${selectedFile1}_${selectedFile2}.json`;
-        localStorage.setItem(fileName, JSON.stringify(intersection));
+        add({ name: fileName, data: JSON.stringify(intersection)});
         addLayer({
           name: fileName,
           url: URL.createObjectURL(
