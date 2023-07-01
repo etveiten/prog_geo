@@ -4,6 +4,7 @@ import { LayersContext } from "../Sidebar/Layers/LayersContext";
 import { convertToPolygon } from "../../Utils/convertData";
 import Alert from "@mui/material/Alert";
 import "./Union.css"
+import { useIndexedDB } from "react-indexed-db-hook";
 
 //Exactley the same as intersect, but with union instead
 function Union() {
@@ -13,10 +14,18 @@ function Union() {
   const [unionData, setUnionData] = useState(null);
 
   const { addLayer, layerComponents } = useContext(LayersContext);
+  const { add, getAll, getByIndex} = useIndexedDB("files");
+
+  //Refresh the datalist every time a layerComponent is changed
 
   useEffect(() => {
-    const storedDataFiles = Object.keys(localStorage);
-    setDataFiles(storedDataFiles);
+    const fetchData = async () => {
+      const data = await getAll();
+      const dataFiles = data.map((item) => item.name);
+      setDataFiles(dataFiles);
+    };
+
+    fetchData();
   }, [layerComponents]);
 
   const handleFile1Select = (event) => {
@@ -27,12 +36,13 @@ function Union() {
     setSelectedFile2(event.target.value);
   };
 
-  const handleUnion = () => {
+  const handleUnion = async () => {
     if (selectedFile1 && selectedFile2) {
-      const fileData1 = localStorage.getItem(selectedFile1);
-      const fileData2 = localStorage.getItem(selectedFile2);
-      const jsonData1 = JSON.parse(fileData1);
-      const jsonData2 = JSON.parse(fileData2);
+      const fileData1 = await getByIndex("name", selectedFile1);
+      const fileData2 = await getByIndex("name", selectedFile2);
+      
+      const jsonData1 = JSON.parse(fileData1.data);
+      const jsonData2 = JSON.parse(fileData2.data);
 
       const poly1 = convertToPolygon(jsonData1);
       const poly2 = convertToPolygon(jsonData2);
@@ -42,7 +52,7 @@ function Union() {
         setUnionData(unionResult);
 
         const fileName = `${selectedFile1}_U_${selectedFile2}.json`;
-        localStorage.setItem(fileName, JSON.stringify(unionResult));
+        add({ name: fileName, data: JSON.stringify(unionResult)});
         addLayer({
           name: fileName,
           url: URL.createObjectURL(

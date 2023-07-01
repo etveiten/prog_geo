@@ -4,6 +4,7 @@ import { LayersContext } from "../Sidebar/Layers/LayersContext";
 import { convertToPolygon } from "../../Utils/convertData";
 import Alert from "@mui/material/Alert";
 import "./Difference.css";
+import { useIndexedDB } from "react-indexed-db-hook";
 
 function Difference() {
   const [dataFiles, setDataFiles] = useState([]);
@@ -12,11 +13,18 @@ function Difference() {
   const [differenceData, setDifferenceData] = useState(null);
 
   const { addLayer, layerComponents } = useContext(LayersContext);
+  const { add, getAll, getByIndex} = useIndexedDB("files");
 
-  //Update files when a layer is updated 
+  //Refresh the datalist every time a layerComponent is changed
+
   useEffect(() => {
-    const storedDataFiles = Object.keys(localStorage);
-    setDataFiles(storedDataFiles);
+    const fetchData = async () => {
+      const data = await getAll();
+      const dataFiles = data.map((item) => item.name);
+      setDataFiles(dataFiles);
+    };
+
+    fetchData();
   }, [layerComponents]);
 
   const handleFile1Select = (event) => {
@@ -27,14 +35,15 @@ function Difference() {
     setSelectedFile2(event.target.value);
   };
 
-  //Calculate difference between two files, had to convert them to polygons from feauturelayers 
+  //Calculate difference between two files, had to convert them to polygons from feauturelayers
   //This function is defined in Utils
-  const handleDifference = () => {
+  const handleDifference = async () => {
     if (selectedFile1 && selectedFile2) {
-      const fileData1 = localStorage.getItem(selectedFile1);
-      const fileData2 = localStorage.getItem(selectedFile2);
-      const jsonData1 = JSON.parse(fileData1);
-      const jsonData2 = JSON.parse(fileData2);
+      const fileData1 = await getByIndex("name", selectedFile1);
+      const fileData2 = await getByIndex("name", selectedFile2);
+      
+      const jsonData1 = JSON.parse(fileData1.data);
+      const jsonData2 = JSON.parse(fileData2.data);
 
       const poly1 = convertToPolygon(jsonData1);
       const poly2 = convertToPolygon(jsonData2);
@@ -44,7 +53,7 @@ function Difference() {
         setDifferenceData(differenceResult);
 
         const fileName = `${selectedFile1}_${selectedFile2}_diff.json`;
-        localStorage.setItem(fileName, JSON.stringify(differenceResult));
+        add({ name: fileName, data: JSON.stringify(differenceResult)});
         addLayer({
           name: fileName,
           url: URL.createObjectURL(
@@ -77,7 +86,11 @@ function Difference() {
             <label htmlFor="file1">Select File 1:</label>
           </div>
           <div className="difference-item2">
-            <select id="file1" value={selectedFile1} onChange={handleFile1Select}>
+            <select
+              id="file1"
+              value={selectedFile1}
+              onChange={handleFile1Select}
+            >
               <option value="">-- Select a file --</option>
               {dataFiles.map((fileName) => (
                 <option key={fileName} value={fileName}>
@@ -92,7 +105,11 @@ function Difference() {
             <label htmlFor="file2">Select File 2:</label>
           </div>
           <div className="difference-item4">
-            <select id="file2" value={selectedFile2} onChange={handleFile2Select}>
+            <select
+              id="file2"
+              value={selectedFile2}
+              onChange={handleFile2Select}
+            >
               <option value="">-- Select a file --</option>
               {dataFiles.map((fileName) => (
                 <option key={fileName} value={fileName}>
@@ -114,7 +131,8 @@ function Difference() {
         {differenceData && (
           <Alert
             severity="success"
-            onClose={() => setDifferenceData(null)} sx={{ mt: 2, zIndex: 333 }}
+            onClose={() => setDifferenceData(null)}
+            sx={{ mt: 2, zIndex: 333 }}
             className="difference-alert"
           >
             Difference successfully done.

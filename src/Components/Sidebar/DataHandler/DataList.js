@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useContext, useMemo } from "react";
 import { LayersContext } from "../Layers/LayersContext";
 import "./DataList.css";
-import { lineStringToPolygon } from "@turf/turf";
 
+import { useIndexedDB } from "react-indexed-db-hook";
 // Import icons
 import { ReactComponent as AddIcon } from "../../../Icons/add-plus-square-svgrepo-com.svg";
 import { ReactComponent as CheckIcon } from "../../../Icons/checkmark-square-svgrepo-com.svg";
@@ -13,11 +13,20 @@ function DataList() {
     useContext(LayersContext);
   const [dataFiles, setDataFiles] = useState([]);
   const [itemColors, setItemColors] = useState({});
+  const { add, getAll, getByIndex} = useIndexedDB("files");
 
-  //Update the localstorage every time a layerComponent is changed
+  //Refresh the datalist every time a layerComponent is changed
   useEffect(() => {
-    const storedDataFiles = Object.keys(localStorage);
-    setDataFiles(storedDataFiles);
+
+    
+    const fetchData = async () => {
+      const data = await getAll();
+      const dataFiles = data.map((item) => item.name);
+      setDataFiles(dataFiles);
+
+    };
+
+    fetchData();
   }, [layerComponents]);
 
   //Update the colors of the items in the list
@@ -49,18 +58,19 @@ function DataList() {
 
   //Logic for adding a layer to the map. If its not selected, the item, aka object with data
   //is procecced and added to the map.
-  const handleAddLayer = (fileName) => {
+  const handleAddLayer = async (fileName) => {
     if (!isLayerSelected(fileName)) {
-      const fileData = localStorage.getItem(fileName);
+      const fileData = await getByIndex("name", fileName);
+      
       const extension = fileName.split(".").pop().toLowerCase();
       let layerUrl;
       let layerColor = "";
-  
+
       if (extension === "json" || extension === "geojson") {
-        const jsonData = JSON.parse(fileData);
+        const jsonData = JSON.parse(fileData.data);
         if (jsonData.features && jsonData.features.length > 0) {
           const geometryType = jsonData.features[0].geometry.type;
-          layerUrl = URL.createObjectURL(new Blob([fileData]));
+          layerUrl = URL.createObjectURL(new Blob([fileData.data]));
           layerColor = generateRandomColor();
           addLayer({
             name: fileName,
@@ -74,8 +84,8 @@ function DataList() {
       } else if (extension === "shp") {
         // Handle Shapefile here (if needed)
       }
-  
-      //Handle the url for a localStorage item and set colors
+
+      //Handle the url for a database item and set colors
       if (layerUrl) {
         setItemColors((prevColors) => ({
           ...prevColors,
@@ -102,18 +112,22 @@ function DataList() {
       reader.onload = () => {
         const fileData = reader.result;
         const fileName = file.name;
-        localStorage.setItem(fileName, fileData);
+
+        // Add the file to IndexedDB
+        add({ name: fileName, data: fileData });
+
+        //Update the state of dataFiles
         setDataFiles((prevDataFiles) => [...prevDataFiles, fileName]);
       };
       reader.readAsText(file);
     });
   };
 
-
   const handleDragOver = (event) => {
     event.preventDefault();
   };
 
+ 
   //Check if the files are of valid types. I have defied this to be json and geojson
   const isValidFile = (fileName) => {
     const validExtensions = ["json", "geojson", "shp"];

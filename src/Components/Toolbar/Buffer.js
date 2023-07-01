@@ -3,7 +3,7 @@ import { buffer, polygon } from "@turf/turf";
 import { LayersContext } from "../Sidebar/Layers/LayersContext";
 import { Alert } from "@mui/material";
 import "./Buffer.css";
-import zIndex from "@mui/material/styles/zIndex";
+import { useIndexedDB } from "react-indexed-db-hook";
 
 //Component that handles the buffer functionality
 
@@ -16,12 +16,22 @@ function BufferComponent() {
   const [showAlert, setShowAlert] = useState(false);
 
   const { addLayer, layerComponents } = useContext(LayersContext);
+  const { add, getAll, getByIndex} = useIndexedDB("files");
 
-  //UseEffect to update the datafiles when a new layer is added
-  useEffect(() => {
-    const storedDataFiles = Object.keys(localStorage);
-    setDataFiles(storedDataFiles);
-  }, [layerComponents]);
+
+//Refresh the datalist every time a layerComponent is changed
+useEffect(() => {
+
+    
+  const fetchData = async () => {
+    const data = await getAll();
+    const dataFiles = data.map((item) => item.name);
+    setDataFiles(dataFiles);
+
+  };
+
+  fetchData();
+}, [layerComponents]);
 
   //Functions to handle the file selection and buffer size
   const handleFileSelect = (event) => {
@@ -37,12 +47,12 @@ function BufferComponent() {
   };
 
   //Convertion and buffering of the selected file
-  const handleBuffer = () => {
+  const handleBuffer = async () => {
     if (selectedFile) {
 
       //add the files for the layer to a const
-      const fileData = localStorage.getItem(selectedFile);
-      const jsonData = JSON.parse(fileData);
+      const fileData = await getByIndex("name", selectedFile);
+      const jsonData = JSON.parse(fileData.data);
 
       let buffered;
       //If linestring, convert to polygon and then buffer
@@ -73,7 +83,7 @@ function BufferComponent() {
 
 
       //Adding the buffered layer to the map
-      localStorage.setItem(fileName, JSON.stringify(buffered));
+      add({ name: fileName, data: JSON.stringify(buffered)});
       addLayer({
         name: fileName,
         url: URL.createObjectURL(
