@@ -6,28 +6,25 @@ import { useIndexedDB } from "react-indexed-db-hook";
 // Import icons
 import { ReactComponent as AddIcon } from "../../../Icons/add-plus-square-svgrepo-com.svg";
 import { ReactComponent as CheckIcon } from "../../../Icons/checkmark-square-svgrepo-com.svg";
-
+import axios from "axios";
 function DataList() {
   // Context methods for the Layers
   const { addLayer, removeLayer, selectedLayers, layerComponents } =
     useContext(LayersContext);
   const [dataFiles, setDataFiles] = useState([]);
   const [itemColors, setItemColors] = useState({});
-  const { add, getAll, getByIndex} = useIndexedDB("files");
+  const { add, getAll, getByIndex } = useIndexedDB("files");
 
   //Refresh the datalist every time a layerComponent is changed
   useEffect(() => {
-
-    
     const fetchData = async () => {
       const data = await getAll();
       const dataFiles = data.map((item) => item.name);
       setDataFiles(dataFiles);
-
     };
 
     fetchData();
-  }, [layerComponents]);
+  }, [layerComponents, dataFiles]);
 
   //Update the colors of the items in the list
   useEffect(() => {
@@ -61,7 +58,7 @@ function DataList() {
   const handleAddLayer = async (fileName) => {
     if (!isLayerSelected(fileName)) {
       const fileData = await getByIndex("name", fileName);
-      
+
       const extension = fileName.split(".").pop().toLowerCase();
       let layerUrl;
       let layerColor = "";
@@ -81,10 +78,7 @@ function DataList() {
             type: geometryType, // Set the layer type based on the first feature's geometry type
           });
         }
-      } else if (extension === "shp") {
-        // Handle Shapefile here (if needed)
       }
-
       //Handle the url for a database item and set colors
       if (layerUrl) {
         setItemColors((prevColors) => ({
@@ -104,33 +98,74 @@ function DataList() {
 
   //Code for dropping files into the filedropper
 
-  const handleDrop = (event) => {
+  const handleDrop = async (event) => {
     event.preventDefault();
     const files = event.dataTransfer.files;
-    Array.from(files).forEach((file) => {
-      const reader = new FileReader();
-      reader.onload = () => {
-        const fileData = reader.result;
-        const fileName = file.name;
 
-        // Add the file to IndexedDB
-        add({ name: fileName, data: fileData });
+    for (const file of files) {
+      const fileName = file.name;
+      const extension = fileName.split(".").pop().toLowerCase();
 
-        //Update the state of dataFiles
-        setDataFiles((prevDataFiles) => [...prevDataFiles, fileName]);
-      };
-      reader.readAsText(file);
-    });
+      if (isValidFileExtension(extension)) {
+        // Handle JSON and GeoJSON files as before
+        const reader = new FileReader();
+        reader.onload = () => {
+          const fileData = reader.result;
+
+          // Add the file to IndexedDB
+          add({ name: fileName, data: fileData });
+          console.log(fileData);
+
+          // Update the state of dataFiles
+          setDataFiles((prevDataFiles) => [...prevDataFiles, fileName]);
+        };
+        reader.readAsText(file);
+      } else if (extension === "zip") {
+        // Handle ZIP files by sending them to the backend for processing
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+          const response = await axios.post(
+            "http://localhost:8080/process-zip",
+            formData
+          );
+
+          if (response.status === 200 && response.data) {
+            // Assuming the backend returns the processed JSON in the response
+            const processedJsonData = response.data;
+            // Modify the file name to replace .zip with .json
+            const modifiedFileName = fileName.replace(/\.zip$/, ".json");
+            // Add the file to IndexedDB
+            add({ name: modifiedFileName, data: processedJsonData.data });
+            console.log(processedJsonData);
+
+            // Update the state of dataFiles
+            setDataFiles((prevDataFiles) => [...prevDataFiles, fileName]);
+          }
+        } catch (error) {
+          console.error("Error processing ZIP file:", error);
+        }
+      } else {
+        // Handle invalid file extension (e.g., show an error message)
+        console.error(`Invalid file extension: ${extension}`);
+      }
+    }
+  };
+
+  // Function to check if the file extension is valid (e.g., json or geojson)
+  const isValidFileExtension = (extension) => {
+    const validExtensions = ["json", "geojson"];
+    return validExtensions.includes(extension);
   };
 
   const handleDragOver = (event) => {
     event.preventDefault();
   };
 
- 
   //Check if the files are of valid types. I have defied this to be json and geojson
   const isValidFile = (fileName) => {
-    const validExtensions = ["json", "geojson", "shp"];
+    const validExtensions = ["json", "geojson"];
     const extension = fileName.split(".").pop().toLowerCase();
     return validExtensions.includes(extension);
   };
