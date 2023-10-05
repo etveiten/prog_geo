@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useContext, useRef } from "react";
 import mapboxgl from "mapbox-gl";
 import "mapbox-gl/dist/mapbox-gl.css";
+import MapboxGeocoder from "@mapbox/mapbox-gl-geocoder";
+import "@mapbox/mapbox-gl-geocoder/dist/mapbox-gl-geocoder.css";
+
 import { LayersContext } from "../Sidebar/Layers/LayersContext";
 
 function MapBox() {
@@ -23,6 +26,15 @@ function MapBox() {
       zoom: 13,
     });
 
+    const geocoder = new MapboxGeocoder({
+      accessToken: mapboxgl.accessToken, // Use your Mapbox access token
+      mapboxgl: mapboxgl,
+      marker: true, // Disable the default marker
+      placeholder: "Search for places", // Customize the input placeholder
+    });
+
+    mapInstance.addControl(geocoder);
+
     setMap(mapInstance);
 
     // Clean up
@@ -37,16 +49,15 @@ function MapBox() {
     //If there is no map, return
     if (!map) return;
 
-    
     map.on("click", (e) => {
       const features = map.queryRenderedFeatures(e.point);
 
-          if (features.length > 0) {
-            // Display information about the clicked feature
-            const featureInfo = features[0].properties;
-            alert(`Clicked Feature Info: ${JSON.stringify(featureInfo)}`);
-          }
-    })
+      if (features.length > 0) {
+        // Display information about the clicked feature
+        const featureInfo = features[0].properties;
+        alert(`Clicked Feature Info: ${JSON.stringify(featureInfo)}`);
+      }
+    });
 
     // Update layer order
     const newLayerOrder = layerComponents.map((layer) => layer.name);
@@ -167,35 +178,35 @@ function MapBox() {
             data: layer.url,
           });
 
-         // Determine layer type
-         let layerType = "fill";
-         let paintProperties = {
-           "fill-color": layer.color,
-           "fill-opacity": layer.opacity,
-         };
+          // Determine layer type
+          let layerType = "fill";
+          let paintProperties = {
+            "fill-color": layer.color,
+            "fill-opacity": layer.opacity,
+          };
 
-         if (layer.type === "LineString") {
-           layerType = "line";
-           paintProperties = {
-             "line-color": layer.color,
-             "line-opacity": layer.opacity,
-             "line-width": 2,
-           };
-         } else if (layer.type === "Point") {
-           layerType = "circle";
-           paintProperties = {
-             "circle-color": layer.color,
-             "circle-radius": 6,
-           };
-         } else if (layer.type === "Polygon") {
-           // Check for polygons
-           layerType = "fill";
-           paintProperties = {
-             "fill-color": layer.color,
-             "fill-opacity": layer.opacity,
-             "fill-outline-color": "black", // Polygon outline color
-           };
-         }
+          if (layer.type === "LineString") {
+            layerType = "line";
+            paintProperties = {
+              "line-color": layer.color,
+              "line-opacity": layer.opacity,
+              "line-width": 2,
+            };
+          } else if (layer.type === "Point") {
+            layerType = "circle";
+            paintProperties = {
+              "circle-color": layer.color,
+              "circle-radius": 6,
+            };
+          } else if (layer.type === "Polygon") {
+            // Check for polygons
+            layerType = "fill";
+            paintProperties = {
+              "fill-color": layer.color,
+              "fill-opacity": layer.opacity,
+              "fill-outline-color": "black", // Polygon outline color
+            };
+          }
 
           map.addLayer({
             id: layer.name,

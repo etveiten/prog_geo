@@ -48,9 +48,20 @@ function Sidebar() {
             <DataIcon className="sidebar-icon" />
             Data
           </div>
+
+                  
+          <div
+            className={`sidebar-option ${
+              selectedItem === "basemap-settings" ? "selected" : ""
+            }`}
+            onClick={() => handleItemClick("basemap-settings")}
+          >
+            <DataIcon className="sidebar-icon" />
+            Basemap Settings
+          </div>
         </div>
         <div className="sidebar-content">
-            <DataList/>
+        {selectedItem === "data" && <DataList />}
         </div>
       </div>
       <div className="sidebar-selected-option">

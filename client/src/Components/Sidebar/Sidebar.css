@@ -22,20 +22,27 @@
   flex-direction: column;
   flex-grow: 1;
   overflow-y: hidden;
+  border: 2px solid red;
 }
 
 .sidebar-buttons {
   display: flex;
+  flex-direction: column;
+  border: 1px solid greenyellow;
+
+  width: 100%;
 }
 
 .sidebar-option {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  border: 2px solid black;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-evenly;
   flex-grow: 1;
   padding: 10px;
   cursor: pointer;
-  width: 50%;
+  
 }
 
 .sidebar-option:hover {
@@ -56,6 +63,7 @@
   flex-grow: 1;
   padding: 10px;
   overflow-y: auto;
+  border: 2px solid blue;
 }
 
 .sidebar-layers-header{
