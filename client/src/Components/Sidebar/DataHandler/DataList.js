@@ -7,6 +7,7 @@ import { useIndexedDB } from "react-indexed-db-hook";
 import { ReactComponent as AddIcon } from "../../../Icons/add-plus-square-svgrepo-com.svg";
 import { ReactComponent as CheckIcon } from "../../../Icons/checkmark-square-svgrepo-com.svg";
 import axios from "axios";
+
 function DataList() {
   // Context methods for the Layers
   const { addLayer, removeLayer, selectedLayers, layerComponents } =
@@ -114,13 +115,14 @@ function DataList() {
 
           // Add the file to IndexedDB
           add({ name: fileName, data: fileData });
-          console.log(fileData);
 
           // Update the state of dataFiles
           setDataFiles((prevDataFiles) => [...prevDataFiles, fileName]);
         };
         reader.readAsText(file);
-      } else if (extension === "zip") {
+      } 
+      
+      else if (extension === "zip") {
         // Handle ZIP files by sending them to the backend for processing
         const formData = new FormData();
         formData.append("file", file);
@@ -138,7 +140,6 @@ function DataList() {
             const modifiedFileName = fileName.replace(/\.zip$/, ".json");
             // Add the file to IndexedDB
             add({ name: modifiedFileName, data: processedJsonData.data });
-            console.log(processedJsonData);
 
             // Update the state of dataFiles
             setDataFiles((prevDataFiles) => [...prevDataFiles, fileName]);
@@ -146,6 +147,32 @@ function DataList() {
         } catch (error) {
           console.error("Error processing ZIP file:", error);
         }
+      } else if (extension === "gml") {
+        // Handle GML files by sending them to the backend for processing
+        const formData = new FormData();
+        formData.append("file", file);
+
+        try {
+          const response = await axios.post(
+            "http://localhost:8080/process-gml",
+            formData
+          );
+
+          if (response.status === 200 && response.data) {
+            // Assuming the backend returns the processed JSON in the response
+            const processedJsonData = response.data.data;
+            // Modify the file name to replace .gml with .json
+            const modifiedFileName = fileName.replace(/\.gml$/, ".json");
+            // Add the file to IndexedDB
+            add({ name: modifiedFileName, data: processedJsonData });
+
+            // Update the state of dataFiles
+            setDataFiles((prevDataFiles) => [...prevDataFiles, fileName]);
+          }
+        } catch (error) {
+          console.error("Error processing GML file:", error);
+        }
+
       } else {
         // Handle invalid file extension (e.g., show an error message)
         console.error(`Invalid file extension: ${extension}`);
@@ -193,7 +220,7 @@ function DataList() {
         }}
       >
         <span className="data-files-dropzone-text">
-          Drag and drop JSON or GeoJSON files here
+          Drag and drop JSON, GeoJSON or zipped Shapefiles files here
         </span>
       </div>
       <ul className="data-files-list">

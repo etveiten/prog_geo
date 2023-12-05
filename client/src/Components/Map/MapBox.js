@@ -10,7 +10,8 @@ function MapBox() {
   //Local states, refs and contexts to use the context functionallity
   const [map, setMap] = useState(null);
   const [addedLayers, setAddedLayers] = useState([]);
-  const { layerComponents } = useContext(LayersContext);
+  const { layerComponents, setLayerColor, setLayerOpacity } =
+    useContext(LayersContext);
   const [layerOrder, setLayerOrder] = useState([]);
   const prevLayerOrder = useRef([]);
   const layerMap = useRef(new Map());
@@ -33,6 +34,7 @@ function MapBox() {
       placeholder: "Search for places", // Customize the input placeholder
     });
 
+
     mapInstance.addControl(geocoder);
 
     setMap(mapInstance);
@@ -54,8 +56,19 @@ function MapBox() {
 
       if (features.length > 0) {
         // Display information about the clicked feature
-        const featureInfo = features[0].properties;
-        alert(`Clicked Feature Info: ${JSON.stringify(featureInfo)}`);
+        const featureInfo = features.map((feature) => {
+          const featureProps = feature.properties;
+          const featureInfo = {};
+          for (const prop in featureProps) {
+            if (prop !== "geometry") {
+              featureInfo[prop] = featureProps[prop];
+            }
+          }
+          return featureInfo;
+        });
+        
+        console.log(`Clicked Feature Info: ${JSON.stringify(featureInfo)}`);
+
       }
     });
 
@@ -104,7 +117,7 @@ function MapBox() {
               "line-opacity": layer.opacity,
               "line-width": 2,
             };
-          } else if (layer.type === "Point") {
+          } else if (layer.type === "Point" || layer.type === "MultiPoint") {
             layerType = "circle";
             paintProperties = {
               "circle-color": layer.color,

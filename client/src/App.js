@@ -2,6 +2,8 @@ import "./App.css";
 
 import Sidebar from "./Components/Sidebar/Sidebar";
 import Toolbar from "./Components/Toolbar/Toolbar";
+import Info from "./Components/Info";
+import Dock from "./Components/Dock";
 import { useState } from "react";
 
 // Contexts
@@ -22,10 +24,10 @@ import Mapbox from "react-map-gl/dist/esm/mapbox/mapbox";
 initDB(DBConfig);
 
 function App() {
-
   //States for the app
   const [isToolsFolded, setIsToolsFolded] = useState(true);
   const [currentComponent, setCurrentComponent] = useState(null);
+  
 
   //Fold tools container
   const handleToolsFoldButtonClick = () => {
@@ -37,27 +39,18 @@ function App() {
   };
 
   return (
-
-
-        <LayersProvider>
-          <div className="App">
-            <div className="sidebar-container">
-              <Sidebar />
-            </div>
-            <div className="map-container">
-
-              <MapBox/>
-            </div>
-            <div className={`tools-container ${isToolsFolded ? "folded" : ""}`}>
-              <Toolbar
-                isToolsFolded={isToolsFolded}
-                handleFoldButtonClick={handleToolsFoldButtonClick}
-                handleComponentButtonClick={handleToolComponentClick}
-              />
-            </div>
-          </div>
-        </LayersProvider>
-
+    <LayersProvider>
+      <div className="App">
+        <div className="sidebar-container">
+          <Sidebar />
+        </div>
+        <div className="map-container">
+          <MapBox />
+          {/*<Info/> */}
+          <Dock/>
+        </div>
+      </div>
+    </LayersProvider>
   );
 }
 

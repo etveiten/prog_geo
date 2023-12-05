@@ -103,7 +103,6 @@ const LayersList = () => {
                       {...provided.draggableProps}
                       {...provided.dragHandleProps}
                       className="layer-item"
-                      
                     >
                       <div className="layer-tools">
                         {selectedLayer === layer.name && showColorPicker && (
@@ -127,13 +126,12 @@ const LayersList = () => {
                         <span className="layer-name">{layer.name}</span>
                       </div>
                       <div className="layer-info">
-                      
                         <button
                           className="layer-button"
                           onClick={() => handleColorButtonClick(layer.name)}
                         >
                           <span className="layer-icon color-icon">
-                            <ColorIcon width="20px" height="20px"/>
+                            <ColorIcon width="20px" height="20px" />
                           </span>
                         </button>
                         <button
@@ -149,7 +147,7 @@ const LayersList = () => {
                           onClick={() => handleRemoveLayer(layer.name)}
                         >
                           <span className="layer-icon remove-icon">
-                            <RemoveIcon width="20px" height="20px"/>
+                            <RemoveIcon width="20px" height="20px" />
                           </span>
                         </button>
                       </div>

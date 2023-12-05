@@ -2,6 +2,7 @@
   display: flex;
   flex: 1;
   overflow-y: auto;
+  border: 2px solid red;
 }
 
 .layers-list-wrapper {
@@ -10,6 +11,7 @@
   flex: 1;
   height: 100%;
   width: 100%;
+  border: 2px solid blue;
 }
 
 .layer-item {
@@ -20,7 +22,7 @@
   position: relative;
   border: 1px solid black;
   width: 100%;
-  min-height: 3rem;
+  min-height: 6rem;
 }
 
 .layer-tools {
