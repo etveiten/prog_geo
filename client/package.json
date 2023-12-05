@@ -24,6 +24,7 @@
     "axios": "^1.5.0",
     "esri": "^0.0.1-security",
     "esri-loader": "^3.7.0",
+    "framer-motion": "^10.16.12",
     "fs": "^0.0.1-security",
     "geojson-utils": "^1.1.0",
     "http-server": "^14.1.1",
