@@ -27,7 +27,7 @@ function App() {
   //States for the app
   const [isToolsFolded, setIsToolsFolded] = useState(true);
   const [currentComponent, setCurrentComponent] = useState(null);
-  
+  const [selectedIcon, setSelectedIcon] = useState("default");
 
   //Fold tools container
   const handleToolsFoldButtonClick = () => {
@@ -46,8 +46,8 @@ function App() {
         </div>
         <div className="map-container">
           <MapBox />
-          {/*<Info/> */}
-          <Dock/>
+          <Info tool={selectedIcon} />
+          <Dock onIconClick={setSelectedIcon} />
         </div>
       </div>
     </LayersProvider>

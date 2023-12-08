@@ -61,7 +61,7 @@ function Sidebar() {
           </div>
         </div>
         <div className="sidebar-content">
-        {selectedItem === "data" && <DataList />}
+        {selectedItem === "data" && <DataList mode={"files"} />}
         </div>
       </div>
       <div className="sidebar-selected-option">

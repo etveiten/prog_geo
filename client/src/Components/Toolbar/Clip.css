@@ -1,0 +1,69 @@
+.clip-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #f2f2f2;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.clip-header {
+    margin-bottom: 20px;
+    color: #333;
+}
+
+.clip-content {
+    width: 100%;
+}
+
+.clip-row, .clip-row2 {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.clip-item, .clip-item2 {
+    flex: 1;
+}
+
+.clip-item label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+}
+
+select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: white;
+}
+
+.clip-button {
+    padding: 10px 20px;
+    background-color: #28a745; /* Green color for the clip button */
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.clip-button:hover {
+    background-color: #218838; /* Darker green on hover */
+}
+
+.clip-button:disabled {
+    background-color: #ccc;
+    cursor: default;
+}
+
+.button-text {
+    font-weight: bold;
+}
+
+.clip-alert {
+    margin-top: 20px;
+}

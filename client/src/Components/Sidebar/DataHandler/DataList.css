@@ -2,7 +2,6 @@
     display: flex;
     flex-direction: column;
     align-items: center; /* Center horizontally */
-    border: 2px solid yellow;
     flex-grow: 1;
   }
   
