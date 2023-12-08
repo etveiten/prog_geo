@@ -1,0 +1,70 @@
+.dissolve-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+    background-color: #f2f2f2;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  }
+  
+  .dissolve-header {
+    margin-bottom: 20px;
+    color: #333;
+  }
+  
+  .dissolve-content {
+    width: 100%;
+  }
+  
+  .dissolve-row, .dissolve-row2 {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+  }
+  
+  .dissolve-item, .dissolve-item2 {
+    flex: 1;
+  }
+  
+  .dissolve-item label {
+    display: block;
+    margin-bottom: 5px;
+    color: #555;
+  }
+  
+  select {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    background-color: white;
+  }
+  
+  .dissolve-button {
+    padding: 10px 20px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+  }
+  
+  .dissolve-button:hover {
+    background-color: #0056b3;
+  }
+  
+  .dissolve-button:disabled {
+    background-color: #ccc;
+    cursor: default;
+  }
+  
+  .button-text {
+    font-weight: bold;
+  }
+  
+  .dissolve-alert {
+    margin-top: 20px;
+  }
+  

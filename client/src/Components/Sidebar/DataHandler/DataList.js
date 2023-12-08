@@ -8,7 +8,7 @@ import { ReactComponent as AddIcon } from "../../../Icons/add-plus-square-svgrep
 import { ReactComponent as CheckIcon } from "../../../Icons/checkmark-square-svgrepo-com.svg";
 import axios from "axios";
 
-function DataList() {
+function DataList({mode}) {
   // Context methods for the Layers
   const { addLayer, removeLayer, selectedLayers, layerComponents } =
     useContext(LayersContext);
@@ -70,6 +70,7 @@ function DataList() {
           const geometryType = jsonData.features[0].geometry.type;
           layerUrl = URL.createObjectURL(new Blob([fileData.data]));
           layerColor = generateRandomColor();
+          
           addLayer({
             name: fileName,
             url: layerUrl,
@@ -207,55 +208,60 @@ function DataList() {
 
   return (
     <div className="data-container">
-      <div
-        className="data-files-dropzone"
-        onDrop={handleDrop}
-        onDragOver={handleDragOver}
-        style={{
-          border: "1px solid #ccc",
-          padding: "20px",
-          marginBottom: "20px",
-          width: "80%",
-          height: "100px",
-        }}
-      >
-        <span className="data-files-dropzone-text">
-          Drag and drop JSON, GeoJSON or zipped Shapefiles files here
-        </span>
-      </div>
-      <ul className="data-files-list">
-        {dataFiles.map((fileName) => {
-          if (isValidFile(fileName)) {
-            const itemColor = getItemColors[fileName] || "transparent";
-            const itemColorWithAlpha = `${itemColor}30`; // Add alpha value (30 in hex is equivalent to 0.3 in decimal)
-            return (
-              <li key={fileName} className="data-files-item">
-                <span className="data-file-name">{fileName}</span>
-                <button
-                  className="add-button"
-                  onClick={
-                    !isLayerSelected(fileName)
-                      ? () => handleAddLayer(fileName)
-                      : null
-                  }
-                  style={{
-                    backgroundColor: isLayerSelected(fileName)
-                      ? itemColorWithAlpha
-                      : "transparent",
-                  }}
-                >
-                  {isLayerSelected(fileName) ? (
-                    <CheckIcon width="20px" height="20px" />
-                  ) : (
-                    <AddIcon width="20px" height="20px" />
-                  )}
-                </button>
-              </li>
-            );
-          }
-          return null;
-        })}
-      </ul>
+      {mode === "dropzone" ? (
+        // Render the file dropper if mode is "dropzone"
+        <div
+          className="data-files-dropzone"
+          onDrop={handleDrop}
+          onDragOver={handleDragOver}
+          style={{
+            
+            padding: "20px",
+            marginBottom: "20px",
+            width: "80%",
+            height: "300px",
+          }}
+        >
+          <span className="data-files-dropzone-text">
+            Drag and drop JSON, GeoJSON, zipped Shapefiles or GML files here
+          </span>
+        </div>
+      ) : mode === "files" ? (
+        // Render the data files list if mode is "files"
+        <ul className="data-files-list">
+          {dataFiles.map((fileName) => {
+            if (isValidFile(fileName)) {
+              const itemColor = getItemColors[fileName] || "transparent";
+              const itemColorWithAlpha = `${itemColor}30`; // Add alpha value
+              return (
+                <li key={fileName} className="data-files-item">
+                  <span className="data-file-name">{fileName}</span>
+                  <button
+                    className="add-button"
+                    onClick={
+                      !isLayerSelected(fileName)
+                        ? () => handleAddLayer(fileName)
+                        : null
+                    }
+                    style={{
+                      backgroundColor: isLayerSelected(fileName)
+                        ? itemColorWithAlpha
+                        : "transparent",
+                    }}
+                  >
+                    {isLayerSelected(fileName) ? (
+                      <CheckIcon width="20px" height="20px" />
+                    ) : (
+                      <AddIcon width="20px" height="20px" />
+                    )}
+                  </button>
+                </li>
+              );
+            }
+            return null;
+          })}
+        </ul>
+      ) : null}
     </div>
   );
 }
