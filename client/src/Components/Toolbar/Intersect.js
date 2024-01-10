@@ -11,6 +11,8 @@ function Intersect() {
   const [selectedFile1, setSelectedFile1] = useState("");
   const [selectedFile2, setSelectedFile2] = useState("");
   const [intersectData, setIntersectData] = useState(null);
+  const [customLayerName, setCustomLayerName] = useState(""); // State for custom layer name
+
 
   const { addLayer, layerComponents } = useContext(LayersContext);
   const { add, getAll, getByIndex} = useIndexedDB("files");
@@ -35,6 +37,10 @@ function Intersect() {
     setSelectedFile2(event.target.value);
   };
 
+  const handleCustomLayerNameChange = (event) => {
+    setCustomLayerName(event.target.value);
+  };
+
   //Sort of the same as buffer, Did reuse most of the components 
   const handleIntersection = async () => {
     if (selectedFile1 && selectedFile2) {
@@ -47,14 +53,15 @@ function Intersect() {
       const poly1 = convertToPolygon(jsonData1);
       const poly2 = convertToPolygon(jsonData2);
 
-      if (poly1 && poly2) {
+      if (poly1 && poly2 && customLayerName) {
         const intersection = intersect(poly1, poly2);
         setIntersectData(intersection);
 
-        const fileName = `intersected_${selectedFile1}_${selectedFile2}.json`;
-        add({ name: fileName, data: JSON.stringify(intersection)});
+        const fileName = customLayerName;
+        add({ name: fileName, data: JSON.stringify(intersection), layerName: customLayerName});
         addLayer({
-          name: fileName,
+          name: customLayerName + '.geojson',
+          layerName: customLayerName,
           url: URL.createObjectURL(
             new Blob([JSON.stringify(intersection)], {
               type: "application/json",
@@ -118,6 +125,19 @@ function Intersect() {
           >
             <span className="button-text">Intersection</span>
           </button>
+        </div>
+        <div className="intersect-row4">
+          <div className="item">
+            <label htmlFor="customLayerNameInput">Custom Layer Name:</label>
+          </div>
+          <div className="item">
+            <input
+              id="customLayerNameInput"
+              type="text"
+              value={customLayerName}
+              onChange={handleCustomLayerNameChange}
+            />
+          </div>
         </div>
         {intersectData && (
           <Alert

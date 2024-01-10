@@ -10,6 +10,8 @@ function Clip() {
   const [selectedSourceFile, setSelectedSourceFile] = useState("");
   const [selectedClipFile, setSelectedClipFile] = useState("");
   const [clipData, setClipData] = useState(null);
+  const [customLayerName, setCustomLayerName] = useState(""); // State for custom layer name
+
 
   const { addLayer, layerComponents } = useContext(LayersContext);
   const { add, getAll, getByIndex } = useIndexedDB("files");
@@ -31,8 +33,12 @@ function Clip() {
     setSelectedClipFile(event.target.value);
   };
 
+  const handleCustomLayerNameChange = (event) => {
+    setCustomLayerName(event.target.value);
+  };
+
   const handleClip = async () => {
-    if (selectedSourceFile && selectedClipFile) {
+    if (selectedSourceFile && selectedClipFile && customLayerName) {
       const sourceData = await getByIndex("name", selectedSourceFile);
       const clipData = await getByIndex("name", selectedClipFile);
 
@@ -42,10 +48,11 @@ function Clip() {
       const clippedResult = clip(sourceJson, clipJson);
       setClipData(clippedResult);
 
-      const fileName = `${selectedSourceFile}_clipped.json`;
-      add({ name: fileName, data: JSON.stringify(clippedResult) });
+      
+      add({ name: customLayerName, data: JSON.stringify(clippedResult), layerName: customLayerName });
       addLayer({
-        name: fileName,
+        name: customLayerName,
+        layerName: customLayerName,
         url: URL.createObjectURL(new Blob([JSON.stringify(clippedResult)], {type: "application/json"})),
         color: "green",
         outlineColor: "black",
@@ -108,6 +115,20 @@ function Clip() {
           >
             <span className="button-text">Clip</span>
           </button>
+        </div>
+
+        <div className="clip-row-2">
+          <div className="clip-item">
+            <label htmlFor="customLayerNameInput">Custom Layer Name:</label>
+          </div>
+          <div className="item">
+            <input
+              id="customLayerNameInput"
+              type="text"
+              value={customLayerName}
+              onChange={handleCustomLayerNameChange}
+            />
+          </div>
         </div>
 
         {clipData && (

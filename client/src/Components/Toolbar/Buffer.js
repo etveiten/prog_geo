@@ -14,24 +14,21 @@ function BufferComponent() {
   const [bufferSize, setBufferSize] = useState(100);
   const [bufferedData, setBufferedData] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
+  const [customLayerName, setCustomLayerName] = useState(""); // State for custom layer name
 
   const { addLayer, layerComponents } = useContext(LayersContext);
-  const { add, getAll, getByIndex} = useIndexedDB("files");
+  const { add, getAll, getByIndex } = useIndexedDB("files");
 
+  //Refresh the datalist every time a layerComponent is changed
+  useEffect(() => {
+    const fetchData = async () => {
+      const data = await getAll();
+      const dataFiles = data.map((item) => item.name);
+      setDataFiles(dataFiles);
+    };
 
-//Refresh the datalist every time a layerComponent is changed
-useEffect(() => {
-
-    
-  const fetchData = async () => {
-    const data = await getAll();
-    const dataFiles = data.map((item) => item.name);
-    setDataFiles(dataFiles);
-
-  };
-
-  fetchData();
-}, [layerComponents]);
+    fetchData();
+  }, [layerComponents]);
 
   //Functions to handle the file selection and buffer size
   const handleFileSelect = (event) => {
@@ -46,10 +43,13 @@ useEffect(() => {
     }
   };
 
+  const handleCustomLayerNameChange = (event) => {
+    setCustomLayerName(event.target.value);
+  };
+
   //Convertion and buffering of the selected file
   const handleBuffer = async () => {
-    if (selectedFile) {
-
+    if (selectedFile && customLayerName) {
       //add the files for the layer to a const
       const fileData = await getByIndex("name", selectedFile);
       const jsonData = JSON.parse(fileData.data);
@@ -74,18 +74,11 @@ useEffect(() => {
 
       setBufferedData(buffered);
 
-      //Saving the buffered layer to a new name, with something to indicate that it is buffered
-      const fileExtensionIndex = selectedFile.lastIndexOf(".");
-      const fileName = `${selectedFile.slice(
-        0,
-        fileExtensionIndex
-      )}_bu_${bufferSize}m${selectedFile.slice(fileExtensionIndex)}`;
-
-
       //Adding the buffered layer to the map
-      add({ name: fileName, data: JSON.stringify(buffered)});
+      add({ name: customLayerName + '.geojson', data: JSON.stringify(buffered), layerName: customLayerName});
       addLayer({
-        name: fileName,
+        name: customLayerName + 'geojson',
+        layerName: customLayerName,
         url: URL.createObjectURL(
           new Blob([JSON.stringify(buffered)], { type: "application/json" })
         ),
@@ -141,12 +134,33 @@ useEffect(() => {
           </div>
         </div>
         <div className="buffer-row-3">
-          <button className="buffer-button" onClick={handleBuffer} disabled={!selectedFile}>
+          <button
+            className="buffer-button"
+            onClick={handleBuffer}
+            disabled={!selectedFile}
+          >
             <span className="button-text">Buffer</span>
           </button>
         </div>
+        <div className="buffer-row-4">
+          <div className="item">
+            <label htmlFor="customLayerNameInput">Custom Layer Name:</label>
+          </div>
+          <div className="item">
+            <input
+              id="customLayerNameInput"
+              type="text"
+              value={customLayerName}
+              onChange={handleCustomLayerNameChange}
+            />
+          </div>
+        </div>
         {showAlert && (
-          <Alert severity="success" onClose={() => setShowAlert(false)} sx={{ mt: 2, zIndex: 333 }}>
+          <Alert
+            severity="success"
+            onClose={() => setShowAlert(false)}
+            sx={{ mt: 2, zIndex: 333 }}
+          >
             Buffer successfully done.
           </Alert>
         )}

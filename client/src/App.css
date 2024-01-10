@@ -6,17 +6,14 @@
 }
 
 .sidebar-container {
-  flex-basis: 20%;
-  max-width: 20%;
+  flex-basis: 30%;
+  max-width: 30%;
   background-color: #d9d9d9;
   position: relative;
   display: flex;
   transition: flex-basis 0.3s ease; /* Add transition for smooth animation */
 }
 
-.sidebar-container.folded {
-  flex-basis: 2%; /* Update flex-basis when folded */
-}
 
 .map-container {
   
@@ -48,9 +45,8 @@
   right: 20px; /* Adjust as needed */
   width: 220px; /* Adjust width as needed */
   height: 300px; /* Adjust height as needed */
-  background-color: rgba(255, 255, 255, 0.3); /* Semi-transparent background */
   border-radius: 10px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+  
   overflow-y: scroll;
   /* Add any additional styling as needed */
 }
@@ -70,6 +66,10 @@
   background-color: #ddd; /* Icon color */
   border-radius: 50%; /* Circle shape */
 }
+
+
+
+
 
 
 .tools-container.folded {
