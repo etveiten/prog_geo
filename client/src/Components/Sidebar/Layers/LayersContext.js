@@ -1,4 +1,5 @@
 import React, { createContext, useState } from "react";
+import { useIndexedDB } from "react-indexed-db-hook";
 
 export const LayersContext = createContext({
   selectedLayers: [], // Set an initial value
@@ -10,18 +11,31 @@ export const LayersContext = createContext({
   setLayerComponents: () => {},
   removedLayers: [],
   clearRemovedLayers: () => {},
+  updateLayerName: () => {},
+  selectedTool: null, // 'color' or 'opacity'
+  selectedLayerForTool: null, // Name of the layer for which the tool is selected
+  setSelectedTool: () => {},
+  setSelectedLayerForTool: () => {},
 });
 
 export const LayersProvider = ({ children }) => {
   const [layerComponents, setLayerComponents] = useState([]);
   const [selectedLayers, setSelectedLayers] = useState([]);
   const [removedLayers, setRemovedLayers] = useState([]);
+  const [selectedTool, setSelectedTool] = useState(null);
+  const [selectedLayerForTool, setSelectedLayerForTool] = useState(null);
+
+
+  const { update, getByIndex } = useIndexedDB("files");
 
   //Add layers, update the selected layers. Add the new layer to the back of the array
 
   const addLayer = (layer) => {
     if (!layerComponents.some((l) => l.name === layer.name)) {
-      setLayerComponents((prevComponents) => [layer, ...prevComponents]);
+      setLayerComponents((prevComponents) => [
+        { ...layer, isVisible: true },
+        ...prevComponents,
+      ]);
     }
     setSelectedLayers((prevLayers) => [...prevLayers, layer.name]);
   };
@@ -35,18 +49,30 @@ export const LayersProvider = ({ children }) => {
       prevLayers.filter((layer) => layer !== layerName)
     );
     setRemovedLayers((prevRemovedLayers) => [...prevRemovedLayers, layerName]);
-    
   };
 
-  //Reorder the layer so that you can change the order of the layers in the datalist 
+
+
+
+  // Function to toggle layer visibility
+  const toggleLayerVisibility = (layerName) => {
+    setLayerComponents(prevComponents =>
+      prevComponents.map(layer =>
+        layer.name === layerName ? { ...layer, isVisible: !layer.isVisible } : layer
+      )
+    );
+  };
+
+  //Reorder the layer so that you can change the order of the layers in the datalist
   const reorderLayers = (startIndex, endIndex) => {
     setLayerComponents((prevComponents) => {
-      const components = [...prevComponents];
-      const [removed] = components.splice(startIndex, 1);
-      components.splice(endIndex, 0, removed);
-      return components;
+      const result = Array.from(prevComponents);
+      const [removed] = result.splice(startIndex, 1);
+      result.splice(endIndex, 0, removed);
+      return result;
     });
   };
+  
 
   //Remove all layers
   const removeAllLayers = () => {
@@ -80,6 +106,23 @@ export const LayersProvider = ({ children }) => {
     setRemovedLayers([]);
   };
 
+  const updateLayerName = async (layerId, newName) => {
+    // Update layerComponents array in the context
+    setLayerComponents((prevComponents) =>
+      prevComponents.map((component) =>
+        component.name === layerId
+          ? { ...component, layerName: newName }
+          : component
+      )
+    );
+
+    // Update the layerName in IndexedDB
+    const fileData = await getByIndex("name", layerId);
+    if (fileData) {
+      await update({ ...fileData, layerName: newName });
+    }
+  };
+
   return (
     <LayersContext.Provider
       value={{
@@ -93,6 +136,13 @@ export const LayersProvider = ({ children }) => {
         removedLayers,
         setLayerOpacity,
         clearRemovedLayers,
+        updateLayerName,
+        toggleLayerVisibility,
+        selectedTool,
+        setSelectedTool,
+        selectedLayerForTool,
+        setSelectedLayerForTool,
+       
       }}
     >
       {children}

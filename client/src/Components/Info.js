@@ -6,9 +6,25 @@ import Difference from "../Components/Toolbar/Difference";
 import DataList from "../Components/Sidebar/DataHandler/DataList";
 import Dissolve from "../Components/Toolbar/Dissolve";
 import Clip from '../Components/Toolbar/Clip';
+import ColorPicker from './Sidebar/Layers/LayerStyling/ColorPicker'; 
+import Opacity from './Sidebar/Layers/LayerStyling/Opacity';
+
+import { useContext } from 'react';
+import { LayersContext } from './Sidebar/Layers/LayersContext';
+
 
 function Info({ tool }) {
+  const { selectedTool, selectedLayerForTool } = useContext(LayersContext);
+
   const renderToolComponent = () => {
+    // Check if color or opacity tool is selected
+    if (selectedTool === 'color' && selectedLayerForTool) {
+      return <ColorPicker layer={selectedLayerForTool} />;
+    } else if (selectedTool === 'opacity' && selectedLayerForTool) {
+      return <Opacity layer={selectedLayerForTool} />;
+    }
+
+    // If no color or opacity tool is selected, check for other tools
     switch (tool) {
       case 'buffer':
         return <Buffer />;
@@ -19,13 +35,14 @@ function Info({ tool }) {
       case 'difference':
         return <Difference />;
       case 'data':
-        return <DataList mode={"dropzone"}/>
+        return <DataList mode={"dropzone"}/>;
       case 'dissolve':
-        return <Dissolve/>
+        return <Dissolve />;
       case 'clip':
-        return <Clip/>
+        return <Clip />;
+      // ... other cases
       default:
-        return <div>Select a tool</div>;
+        return
     }
   };
 

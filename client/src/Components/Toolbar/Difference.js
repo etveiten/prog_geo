@@ -11,6 +11,7 @@ function Difference() {
   const [selectedFile1, setSelectedFile1] = useState("");
   const [selectedFile2, setSelectedFile2] = useState("");
   const [differenceData, setDifferenceData] = useState(null);
+  const [customLayerName, setCustomLayerName] = useState(""); // State for custom layer name
 
   const { addLayer, layerComponents } = useContext(LayersContext);
   const { add, getAll, getByIndex} = useIndexedDB("files");
@@ -35,6 +36,10 @@ function Difference() {
     setSelectedFile2(event.target.value);
   };
 
+  const handleCustomLayerNameChange = (event) => {
+    setCustomLayerName(event.target.value);
+  };
+
   //Calculate difference between two files, had to convert them to polygons from feauturelayers
   //This function is defined in Utils
   const handleDifference = async () => {
@@ -48,14 +53,14 @@ function Difference() {
       const poly1 = convertToPolygon(jsonData1);
       const poly2 = convertToPolygon(jsonData2);
 
-      if (poly1 && poly2) {
+      if (poly1 && poly2 && customLayerName) {
         const differenceResult = difference(poly1, poly2);
         setDifferenceData(differenceResult);
 
-        const fileName = `${selectedFile1}_${selectedFile2}_diff.json`;
-        add({ name: fileName, data: JSON.stringify(differenceResult)});
+        add({ name: customLayerName + '.geojson', data: JSON.stringify(differenceResult), layerName: customLayerName});
         addLayer({
-          name: fileName,
+          name: customLayerName + '.geojson',
+          layerName: customLayerName,
           url: URL.createObjectURL(
             new Blob([JSON.stringify(differenceResult)], {
               type: "application/json",
@@ -72,7 +77,7 @@ function Difference() {
           setDifferenceData(null); // Clear intersectData after 3 seconds
           setSelectedFile1(""); // Reset selectedFile1 to default value
           setSelectedFile2(""); // Reset selectedFile2 to default value
-        }, 3000);
+        }, 10000);
       }
     }
   };
@@ -127,6 +132,20 @@ function Difference() {
           >
             <span className="button-text">Difference</span>
           </button>
+        </div>
+
+        <div className="difference-row4">
+          <div className="difference-item">
+            <label htmlFor="customLayerNameInput">Custom Layer Name:</label>
+          </div>
+          <div className="item">
+            <input
+              id="customLayerNameInput"
+              type="text"
+              value={customLayerName}
+              onChange={handleCustomLayerNameChange}
+            />
+          </div>
         </div>
         {differenceData && (
           <Alert

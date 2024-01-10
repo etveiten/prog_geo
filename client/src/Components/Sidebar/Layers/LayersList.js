@@ -10,8 +10,11 @@ import OpacitySlider from "./OpacitySlider";
 
 // Icons
 import { ReactComponent as RemoveIcon } from "../../../Icons/remove-circle-svgrepo-com.svg";
-import { ReactComponent as OpacityIcon } from "../../../Icons/opacity-svgrepo-com.svg";
+import { ReactComponent as OpacityIcon } from "../../../Icons/ll_opacity.svg";
 import { ReactComponent as ColorIcon } from "../../../Icons/color-palette-svgrepo-com.svg";
+import { ReactComponent as VisibleIcon } from "../../../Icons/ll_visible_true.svg";
+import { ReactComponent as VisibleIconFalse } from "../../../Icons/ll_visible_false.svg";
+
 // Mui
 import { IconButton } from "@mui/material";
 
@@ -24,24 +27,33 @@ const LayersList = () => {
     setLayerOpacity,
     removeLayer,
     layerComponents,
+    updateLayerName,
+    toggleLayerVisibility,
+    setSelectedTool,
+    setSelectedLayerForTool,
+    selectedTool,
   } = useContext(LayersContext);
 
   // State for selected layer and tool
   const [selectedLayer, setSelectedLayer] = useState(null);
-  const [showColorPicker, setShowColorPicker] = useState(false);
-  const [showOpacityPicker, setShowOpacityPicker] = useState(false);
+  const [editingLayerId, setEditingLayerId] = useState(null);
+  const [newLayerName, setNewLayerName] = useState("");
 
+  
   const handleColorButtonClick = (layerName) => {
-    setSelectedLayer(layerName);
-    setShowColorPicker(!showColorPicker);
-    setShowOpacityPicker(false);
+    if (selectedLayer === layerName && selectedTool === 'color') {
+      // If the same layer's color picker is already open, close it
+      setSelectedTool(null);
+      setSelectedLayerForTool(null);
+    } else {
+      // Otherwise, open the color picker for this layer
+      setSelectedLayer(layerName); // You may keep or remove this line based on your requirement
+      setSelectedTool('color');
+      setSelectedLayerForTool(layerName);
+    }
   };
-
-  const handleOpacityButtonClick = (layerName) => {
-    setSelectedLayer(layerName);
-    setShowOpacityPicker(!showOpacityPicker);
-    setShowColorPicker(false);
-  };
+  
+ 
 
   const handleColorChange = (color) => {
     if (selectedLayer) {
@@ -55,16 +67,10 @@ const LayersList = () => {
     }
   };
 
-  const handleOpacityChange = (value) => {
-    if (selectedLayer) {
-      const updatedComponents = layerComponents.map((layer) => {
-        if (layer.name === selectedLayer) {
-          return { ...layer, opacity: value };
-        }
-        return layer;
-      });
-      setLayerComponents(updatedComponents);
-    }
+
+
+  const handleVisibilityClick = (layerName) => {
+    toggleLayerVisibility(layerName);
   };
 
   const handleDragEnd = (result) => {
@@ -78,6 +84,18 @@ const LayersList = () => {
 
   const handleRemoveLayer = (layerName) => {
     removeLayer(layerName);
+  };
+
+  const startEditing = (layerId, currentName) => {
+    setEditingLayerId(layerId);
+    setNewLayerName(currentName);
+  };
+
+  const updateNameAndStopEditing = (layerId) => {
+    if (newLayerName && newLayerName !== layerId) {
+      updateLayerName(layerId, newLayerName);
+    }
+    setEditingLayerId(null);
   };
 
   return (
@@ -105,26 +123,41 @@ const LayersList = () => {
                       className="layer-item"
                     >
                       <div className="layer-tools">
-                        {selectedLayer === layer.name && showColorPicker && (
-                          <div className="color-picker-container">
-                            <CompactPicker
-                              color={layer.color}
-                              onChange={handleColorChange}
-                            />
-                          </div>
-                        )}
-                        {selectedLayer === layer.name && showOpacityPicker && (
-                          <div className="opacity-picker-container">
-                            <OpacitySlider
-                              value={layer.opacity}
-                              onChange={handleOpacityChange}
-                            />
-                          </div>
-                        )}
+                      
                       </div>
-                      <div className="layer-name-container">
-                        <span className="layer-name">{layer.name}</span>
+                      <div className="layer-box">
+                        <div className="layer-name-container">
+                          <div
+                            className="layer-color-box"
+                            style={{ backgroundColor: layer.color }}
+                          ></div>
+                          {editingLayerId === layer.name ? (
+                            <input
+                              type="text"
+                              value={newLayerName}
+                              onChange={(e) => setNewLayerName(e.target.value)}
+                              onBlur={() =>
+                                updateNameAndStopEditing(layer.name)
+                              }
+                              onKeyPress={(e) =>
+                                e.key === "Enter" &&
+                                updateNameAndStopEditing(layer.name)
+                              }
+                              className="layer-name-input"
+                            />
+                          ) : (
+                            <span
+                              className="layer-text"
+                              onClick={() =>
+                                startEditing(layer.name, layer.layerName)
+                              }
+                            >
+                              {layer.layerName}
+                            </span>
+                          )}
+                        </div>
                       </div>
+
                       <div className="layer-info">
                         <button
                           className="layer-button"
@@ -134,12 +167,17 @@ const LayersList = () => {
                             <ColorIcon width="20px" height="20px" />
                           </span>
                         </button>
+                      
                         <button
                           className="layer-button"
-                          onClick={() => handleOpacityButtonClick(layer.name)}
+                          onClick={() => handleVisibilityClick(layer.name)}
                         >
-                          <span className="layer-icon opacity-icon">
-                            <OpacityIcon width="20px" height="20px" />
+                          <span className="layer-icon visibility-icon">
+                            {layer.isVisible ? (
+                              <VisibleIcon width="20px" height="20px" />
+                            ) : (
+                              <VisibleIconFalse width="20px" height="20px" />
+                            )}
                           </span>
                         </button>
                         <button

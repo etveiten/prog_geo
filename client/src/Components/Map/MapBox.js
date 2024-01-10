@@ -67,7 +67,8 @@ function MapBox() {
           return featureInfo;
         });
         
-        console.log(`Clicked Feature Info: ${JSON.stringify(featureInfo)}`);
+        
+        console.log(layerComponents)
 
       }
     });
@@ -123,7 +124,7 @@ function MapBox() {
               "circle-color": layer.color,
               "circle-radius": 6,
             };
-          } else if (layer.type === "Polygon") {
+          } else if (layer.type === "Polygon" || layer.type ==="MutliPolygon") {
             // Check for polygons
             layerType = "fill";
             paintProperties = {
@@ -148,8 +149,14 @@ function MapBox() {
       // Update the previous layer order
       prevLayerOrder.current = newLayerOrder;
     } else {
+
+      
+
       // Check for added or updated layers
       layerComponents.forEach((layer) => {
+
+        const layerVisibility = layer.isVisible ? 'visible' : 'none';
+        
         if (!addedLayers.includes(layer.name)) {
           map.addSource(layer.name, {
             type: "geojson",
@@ -177,56 +184,19 @@ function MapBox() {
             id: layer.name,
             type: layerType,
             source: layer.name,
+            layout: {visibility: layerVisibility},
             paint: paintProperties,
           });
 
           setAddedLayers((prevAddedLayers) => [...prevAddedLayers, layer.name]);
         } else {
-          map.removeLayer(layer.name);
-          map.removeSource(layer.name);
+         
+          // Update paint properties
+          map.setPaintProperty(layer.name, 'fill-color', layer.color);
+          map.setPaintProperty(layer.name, 'fill-opacity', layer.opacity);
 
-          // Add the updated layer
-          map.addSource(layer.name, {
-            type: "geojson",
-            data: layer.url,
-          });
-
-          // Determine layer type
-          let layerType = "fill";
-          let paintProperties = {
-            "fill-color": layer.color,
-            "fill-opacity": layer.opacity,
-          };
-
-          if (layer.type === "LineString") {
-            layerType = "line";
-            paintProperties = {
-              "line-color": layer.color,
-              "line-opacity": layer.opacity,
-              "line-width": 2,
-            };
-          } else if (layer.type === "Point") {
-            layerType = "circle";
-            paintProperties = {
-              "circle-color": layer.color,
-              "circle-radius": 6,
-            };
-          } else if (layer.type === "Polygon") {
-            // Check for polygons
-            layerType = "fill";
-            paintProperties = {
-              "fill-color": layer.color,
-              "fill-opacity": layer.opacity,
-              "fill-outline-color": "black", // Polygon outline color
-            };
-          }
-
-          map.addLayer({
-            id: layer.name,
-            type: layerType,
-            source: layer.name,
-            paint: paintProperties,
-          });
+          // Update layout properties (like visibility)
+          map.setLayoutProperty(layer.name, 'visibility', layer.isVisible ? 'visible' : 'none');
         }
       });
     }

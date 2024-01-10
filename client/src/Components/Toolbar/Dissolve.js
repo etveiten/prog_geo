@@ -12,6 +12,8 @@ function Dissolve() {
   const [selectedProperty, setSelectedProperty] = useState("");
   const [propertyOptions, setPropertyOptions] = useState([]);
   const [dissolveData, setDissolveData] = useState(null);
+  
+
 
   const { addLayer, layerComponents } = useContext(LayersContext);
   const { add, getAll, getByIndex } = useIndexedDB("files");
@@ -46,6 +48,7 @@ function Dissolve() {
     return `#${randomColor}`;
   };
 
+
   const handleDissolve = async () => {
     if (selectedFile) {
       const fileData = await getByIndex("name", selectedFile);
@@ -69,27 +72,29 @@ function Dissolve() {
               features: groupedFeatures[key]
             };
             const dissolvedGroup = dissolve(groupFeatureCollection);
-            const fileName = `${selectedFile}_${key}_dissolved.json`;
+            const fileName = `${selectedFile.split('.')[0]}_${key}.geojson` ;
             const uniqueColor = generateColor();
   
-            add({ name: fileName, data: JSON.stringify(dissolvedGroup) });
+            add({ name: fileName, data: JSON.stringify(dissolvedGroup), layerName: fileName });
             addLayer({
               name: fileName,
+              layerName: fileName,
               url: URL.createObjectURL(new Blob([JSON.stringify(dissolvedGroup)], {type: "application/json"})),
               color: uniqueColor,
               outlineColor: "black",
-              opacity: 0.5,
+              opacity: 1.0,
             });
           });
         } else {
           // Standard dissolve operation
           const dissolveResult = dissolve(jsonData);
-          const fileName = `${selectedFile}_dissolved.json`;
+          const fileName = `${selectedFile.split('.')[0]}_dissolved.json`;
           const uniqueColor = generateColor()
   
-          add({ name: fileName, data: JSON.stringify(dissolveResult) });
+          add({ name: fileName, data: JSON.stringify(dissolveResult), layerName: fileName });
           addLayer({
             name: fileName,
+            layerName: fileName,
             url: URL.createObjectURL(new Blob([JSON.stringify(dissolveResult)], {type: "application/json"})),
             color: uniqueColor,
             outlineColor: "black",
@@ -102,7 +107,7 @@ function Dissolve() {
           setDissolveData(null);
           setSelectedFile("");
           setSelectedProperty("");
-        }, 3000);
+        }, 10000);
       }
     }
   };

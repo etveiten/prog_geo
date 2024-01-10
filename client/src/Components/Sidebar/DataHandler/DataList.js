@@ -6,9 +6,10 @@ import { useIndexedDB } from "react-indexed-db-hook";
 // Import icons
 import { ReactComponent as AddIcon } from "../../../Icons/add-plus-square-svgrepo-com.svg";
 import { ReactComponent as CheckIcon } from "../../../Icons/checkmark-square-svgrepo-com.svg";
+
 import axios from "axios";
 
-function DataList({mode}) {
+function DataList({ mode }) {
   // Context methods for the Layers
   const { addLayer, removeLayer, selectedLayers, layerComponents } =
     useContext(LayersContext);
@@ -61,18 +62,20 @@ function DataList({mode}) {
       const fileData = await getByIndex("name", fileName);
 
       const extension = fileName.split(".").pop().toLowerCase();
+      const layerName = fileName.split(".")[0]; // Extract layerName from fileName
       let layerUrl;
       let layerColor = "";
 
-      if (extension === "json" || extension === "geojson") {
+      if (extension === "json" || extension === "geojson" || extension==="") {
         const jsonData = JSON.parse(fileData.data);
         if (jsonData.features && jsonData.features.length > 0) {
           const geometryType = jsonData.features[0].geometry.type;
           layerUrl = URL.createObjectURL(new Blob([fileData.data]));
           layerColor = generateRandomColor();
-          
+
           addLayer({
-            name: fileName,
+            name: fileName, // Use the full file name as the key
+            layerName: layerName, // Use the extracted name for display
             url: layerUrl,
             color: layerColor,
             outlineColor: generateRandomColor(),
@@ -81,7 +84,7 @@ function DataList({mode}) {
           });
         }
       }
-      //Handle the url for a database item and set colors
+
       if (layerUrl) {
         setItemColors((prevColors) => ({
           ...prevColors,
@@ -115,15 +118,17 @@ function DataList({mode}) {
           const fileData = reader.result;
 
           // Add the file to IndexedDB
-          add({ name: fileName, data: fileData });
+          add({
+            name: fileName,
+            data: fileData,
+            layerName: fileName.split(".")[0],
+          });
 
           // Update the state of dataFiles
           setDataFiles((prevDataFiles) => [...prevDataFiles, fileName]);
         };
         reader.readAsText(file);
-      } 
-      
-      else if (extension === "zip") {
+      } else if (extension === "zip") {
         // Handle ZIP files by sending them to the backend for processing
         const formData = new FormData();
         formData.append("file", file);
@@ -140,7 +145,11 @@ function DataList({mode}) {
             // Modify the file name to replace .zip with .json
             const modifiedFileName = fileName.replace(/\.zip$/, ".json");
             // Add the file to IndexedDB
-            add({ name: modifiedFileName, data: processedJsonData.data });
+            add({
+              name: modifiedFileName,
+              data: processedJsonData.data,
+              layerName: modifiedFileName.split(".")[0],
+            });
 
             // Update the state of dataFiles
             setDataFiles((prevDataFiles) => [...prevDataFiles, fileName]);
@@ -165,7 +174,11 @@ function DataList({mode}) {
             // Modify the file name to replace .gml with .json
             const modifiedFileName = fileName.replace(/\.gml$/, ".json");
             // Add the file to IndexedDB
-            add({ name: modifiedFileName, data: processedJsonData });
+            add({
+              name: modifiedFileName,
+              data: processedJsonData,
+              layerName: modifiedFileName.split(".")[0],
+            });
 
             // Update the state of dataFiles
             setDataFiles((prevDataFiles) => [...prevDataFiles, fileName]);
@@ -173,8 +186,7 @@ function DataList({mode}) {
         } catch (error) {
           console.error("Error processing GML file:", error);
         }
-
-      } else {
+      }  else {
         // Handle invalid file extension (e.g., show an error message)
         console.error(`Invalid file extension: ${extension}`);
       }
@@ -215,7 +227,6 @@ function DataList({mode}) {
           onDrop={handleDrop}
           onDragOver={handleDragOver}
           style={{
-            
             padding: "20px",
             marginBottom: "20px",
             width: "80%",
@@ -230,35 +241,32 @@ function DataList({mode}) {
         // Render the data files list if mode is "files"
         <ul className="data-files-list">
           {dataFiles.map((fileName) => {
-            if (isValidFile(fileName)) {
-              const itemColor = getItemColors[fileName] || "transparent";
-              const itemColorWithAlpha = `${itemColor}30`; // Add alpha value
-              return (
-                <li key={fileName} className="data-files-item">
-                  <span className="data-file-name">{fileName}</span>
-                  <button
-                    className="add-button"
-                    onClick={
-                      !isLayerSelected(fileName)
-                        ? () => handleAddLayer(fileName)
-                        : null
-                    }
-                    style={{
-                      backgroundColor: isLayerSelected(fileName)
-                        ? itemColorWithAlpha
-                        : "transparent",
-                    }}
-                  >
-                    {isLayerSelected(fileName) ? (
-                      <CheckIcon width="20px" height="20px" />
-                    ) : (
-                      <AddIcon width="20px" height="20px" />
-                    )}
-                  </button>
-                </li>
-              );
-            }
-            return null;
+            const itemColor = getItemColors[fileName] || "transparent";
+            const itemColorWithAlpha = `${itemColor}30`; // Add alpha value
+            return (
+              <li key={fileName} className="data-files-item">
+                <button
+                  className="add-button"
+                  onClick={
+                    !isLayerSelected(fileName)
+                      ? () => handleAddLayer(fileName)
+                      : null
+                  }
+                  style={{
+                    backgroundColor: isLayerSelected(fileName)
+                      ? itemColorWithAlpha
+                      : "transparent",
+                  }}
+                >
+                  {isLayerSelected(fileName) ? (
+                    <CheckIcon width="20px" height="20px" />
+                  ) : (
+                    <AddIcon width="20px" height="20px" />
+                  )}
+                </button>
+                <span className="data-file-name">{fileName}</span>
+              </li>
+            );
           })}
         </ul>
       ) : null}

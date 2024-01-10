@@ -13,9 +13,9 @@
     padding: 0;
     margin: 0;
     list-style-type: none;
-    width: calc(100% - 2rem);
+    width: 100%;
     overflow-y: none;
-    border: 2px solid red;
+    /* border: 2px solid black; */
     overflow-y: auto;
     overflow-x: hidden;
     
@@ -23,16 +23,13 @@
   }
   
   .data-files-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: space-between;
-    flex-wrap: wrap;
+    display: grid;
+    grid-template-columns: 1fr 14fr;  
     max-width: 100%;
-    border: 2px solid firebrick;
+    /* border: 2px solid yellow; */
     overflow-x: hidden;
     width: 100%;
-    padding: 0.2rem;
+    padding: 0.3rem;
   }
 
   .data-files-item .data-file-name {
@@ -54,6 +51,7 @@
   
   .data-files-dropzone{
     align-self: center;
+    background-color: #f0f0f0;
   }
 
   .data-files-dropzone-text{

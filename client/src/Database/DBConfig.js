@@ -2,7 +2,7 @@
 
 export const DBConfig = {
     name: "MyDB",
-    version: 1,
+    version: 4,
     objectStoresMeta: [
       {
         store: "files",
@@ -10,6 +10,7 @@ export const DBConfig = {
         storeSchema: [
           { name: "name", keypath: "name", options: { unique: true } },
           { name: "data", keypath: "data", options: { unique: false } },
+          { name: "layerName", keypath: "layerName", options: { unique: false } }, // New field
         ],
       },
     ],

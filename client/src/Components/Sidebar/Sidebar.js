@@ -34,11 +34,10 @@ function Sidebar() {
   return (
     <div className="sidebar">
       <div className="sidebar-header">
-        <h3>GIS - made simple</h3>
+        <span className="sidebar-title">GIS - made simpler</span>
       </div>
       <div className="sidebar-options">
         <div className="sidebar-buttons">
-        
           <div
             className={`sidebar-option ${
               selectedItem === "data" ? "selected" : ""
@@ -46,22 +45,15 @@ function Sidebar() {
             onClick={() => handleItemClick("data")}
           >
             <DataIcon className="sidebar-icon" />
-            Data
+            <span className='sidebar-sub-title'>Data</span>
+            <IconButton onClick={handleInfoClick}>
+            <InfoIcon className='sidebar-icon' />
+          </IconButton>
           </div>
-
-                  
-          <div
-            className={`sidebar-option ${
-              selectedItem === "basemap-settings" ? "selected" : ""
-            }`}
-            onClick={() => handleItemClick("basemap-settings")}
-          >
-            <DataIcon className="sidebar-icon" />
-            Basemap Settings
-          </div>
+          
         </div>
         <div className="sidebar-content">
-        {selectedItem === "data" && <DataList mode={"files"} />}
+           <DataList mode={"files"} />
         </div>
       </div>
       <div className="sidebar-selected-option">
@@ -89,7 +81,9 @@ function Sidebar() {
             </IconButton>
           }
         >
-          Here are the current layers of the map. You can style each layer by adjusting the color or opacity options. Re-order the layers by dragging a layer to a new place in the list.
+          Here are the current layers of the map. You can style each layer by
+          adjusting the color or opacity options. Re-order the layers by
+          dragging a layer to a new place in the list.
         </Alert>
       )}
     </div>

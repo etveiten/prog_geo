@@ -3,7 +3,10 @@ import { ReactComponent as BufferIcon } from "../Icons/buffer_1.svg";
 import { ReactComponent as UnionIcon } from "../Icons/union_svg.svg";
 import { ReactComponent as IntersectIcon } from "../Icons/intersect_svg.svg";
 import { ReactComponent as DifferenceIcon } from "../Icons/difference_svg.svg";
+import { ReactComponent as DissolveIcon } from "../Icons/dissolve_svg.svg";
+import { ReactComponent as ClipIcon } from "../Icons/clip_svg.svg";
 import { ReactComponent as DataIcon } from "../Icons/data_svg.svg";
+import { ReactComponent as InfoIcon } from "../Icons/info_svg.svg";
 import { motion, useMotionValue, useSpring, useTransform } from "framer-motion";
 
 function Dock({ onIconClick }) {
@@ -17,7 +20,7 @@ function Dock({ onIconClick }) {
     "dissolve",
     "clip",
     "data",
-    "default",
+    "info",
   ];
 
 
@@ -33,6 +36,7 @@ function Dock({ onIconClick }) {
     </motion.div>
   );
 }
+
 
 function AppIcon({ mouseX, iconType, onClick }) {
   let ref = useRef(null);
@@ -55,8 +59,14 @@ function AppIcon({ mouseX, iconType, onClick }) {
         return <IntersectIcon />;
       case "difference":
         return <DifferenceIcon />;
+      case "dissolve":
+        return <DissolveIcon />
+      case "clip":
+        return <ClipIcon/>
       case "data":
         return <DataIcon/>
+      case "info":
+        return <InfoIcon/>
       default:
         return null; // or some default icon
     }
