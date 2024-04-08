@@ -1,135 +1,73 @@
+/* Buffer Component CSS, inspired by Clip Component styling */
 .buffer-container {
   display: flex;
   flex-direction: column;
-  align-items: flex-start; 
-  height: 100%;
-  width: 98%;
-  border-radius: 5px;
-  margin:3px;
-  background-color: #f0f0f0;
+  align-items: center;
+  padding: 20px;
+  background-color: #f2f2f2;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .buffer-header {
-  align-self: center;
+  margin-bottom: 20px;
+  color: #333;
 }
 
 .buffer-content {
+  width: 100%;
+}
+
+.buffer-row {
   display: flex;
-  flex-direction: column;
   align-items: center;
-  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.buffer-item, .buffer-item2 {
   flex: 1;
-    width: 100%;
-    position: relative;
 }
 
-.buffer-row-1 {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 10px;
+.buffer-item label {
+  display: block;
+  margin-bottom: 5px;
+  color: #555;
+}
+
+.buffer-select, #buffer-size-input {
   width: 100%;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: white;
 }
 
-.item1 {
-  display: flex;
-  align-items: flex-start;
-  width :40%;
-  padding-left: 1.5rem;
+.buffer-button {
+  padding: 10px 20px;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  background-color: #ccc; /* Default color */
 }
 
-.item2 {
-  display: flex;
-  align-items: flex-end;
-  justify-content: flex-end;
-  width: 60%;
-  padding-right: 1.5rem;
+.buffer-button.enabled {
+  background-color: #28a745; /* Green color when enabled */
 }
 
-.buffer-select {
-  width: 100%;
+.buffer-button:hover {
+  background-color: #218838; /* Darker green on hover */
 }
 
-.buffer-row-2 {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 10px;
-  width: 100%;
+.buffer-button:disabled {
+  cursor: default;
 }
 
-.item3{
-    display: flex;
-    align-items: flex-start;
-    width :40%;
-    padding-left: 1.5rem;
+.button-text {
+  font-weight: bold;
 }
 
-.item4{
-    display: flex;
-    align-items: flex-end;
-    justify-content: flex-end;
-    width: 60%;
-    padding-right: 1.5rem;
+.buffer-alert {
+  margin-top: 20px;
 }
-
-#buffer-size-input{
-    width: 3rem;
-}
-.buffer-row label {
-  margin-right: 10px;
-  font-size: 14px;
-}
-
-.buffer-row-3{
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-    justify-content: center;
-    width: 100%;
-}
-
-.buffer-button{
-    display: flex;
-    align-self: center;
-    justify-self: center;
-    width: 6rem;
-    justify-content: center;
-    align-items: center;
-    height: 3rem;
-    background-color: #f0f0f0;
-    border-radius: 5px;
-}
-
-.button-text{
-    color: black;
-}
-
-/* Styling for Alert */
-.MuiAlert-root {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 2; /* Higher z-index */
-    width: 200px; /* Adjust width as needed */
-  }
-  
-  .buffer-content::before {
-    content: "";
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    z-index: 1; /* Lower z-index */
-    pointer-events: none;
-  }
-  
-  .buffer-content p {
-    margin-top: 2rem; /* Adjust margin as needed */
-  }
-
-

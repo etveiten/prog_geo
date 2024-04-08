@@ -47,7 +47,7 @@
   height: 300px; /* Adjust height as needed */
   border-radius: 10px;
   
-  overflow-y: scroll;
+  overflow-y: hidden;
   /* Add any additional styling as needed */
 }
 

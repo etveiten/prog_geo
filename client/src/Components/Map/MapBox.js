@@ -98,7 +98,6 @@ function MapBox() {
         .slice()
         .reverse()
         .forEach((layer) => {
-          console.log(layer);
           map.addSource(layer.name, {
             type: "geojson",
             data: layer.url,

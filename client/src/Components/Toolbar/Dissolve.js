@@ -56,13 +56,29 @@ function Dissolve() {
   
       if (jsonData && jsonData.type === "FeatureCollection") {
         if (selectedProperty) {
-          // Group features by the selected property and dissolve each group
+          // Group features by the selected property and prepare them for dissolving
           const groupedFeatures = jsonData.features.reduce((acc, feature) => {
             const key = feature.properties[selectedProperty];
-            if (!acc[key]) {
-              acc[key] = [];
+  
+            // Check if the feature is a MultiPolygon
+            if (feature.geometry.type === "MultiPolygon") {
+              // Convert MultiPolygon to multiple Polygon features
+              feature.geometry.coordinates.forEach(polygonCoords => {
+                const polygonFeature = {
+                  type: "Feature",
+                  properties: feature.properties, // Copy properties from the original feature
+                  geometry: {
+                    type: "Polygon",
+                    coordinates: polygonCoords
+                  }
+                };
+                if (!acc[key]) acc[key] = [];
+                acc[key].push(polygonFeature);
+              });
+            } else {
+              if (!acc[key]) acc[key] = [];
+              acc[key].push(feature);
             }
-            acc[key].push(feature);
             return acc;
           }, {});
   
@@ -72,14 +88,14 @@ function Dissolve() {
               features: groupedFeatures[key]
             };
             const dissolvedGroup = dissolve(groupFeatureCollection);
-            const fileName = `${selectedFile.split('.')[0]}_${key}.geojson` ;
+            const fileName = `${selectedFile.split('.')[0]}_${key}.geojson`;
             const uniqueColor = generateColor();
   
-            add({ name: fileName, data: JSON.stringify(dissolvedGroup), layerName: fileName });
+            add({ name: fileName, data: JSON.stringify(dissolvedGroup), layerName: fileName.split('.geojson')[0] });
             addLayer({
               name: fileName,
-              layerName: fileName,
-              url: URL.createObjectURL(new Blob([JSON.stringify(dissolvedGroup)], {type: "application/json"})),
+              layerName: fileName.split('.geojson')[0],
+              url: URL.createObjectURL(new Blob([JSON.stringify(dissolvedGroup)], { type: "application/json" })),
               color: uniqueColor,
               outlineColor: "black",
               opacity: 1.0,
@@ -87,15 +103,35 @@ function Dissolve() {
           });
         } else {
           // Standard dissolve operation
-          const dissolveResult = dissolve(jsonData);
-          const fileName = `${selectedFile.split('.')[0]}_dissolved.json`;
-          const uniqueColor = generateColor()
+          const featuresPreparedForDissolve = jsonData.features.map(feature => {
+            if (feature.geometry.type === "MultiPolygon") {
+              return feature.geometry.coordinates.map(polygonCoords => ({
+                type: "Feature",
+                properties: feature.properties, // Copy properties from the original feature
+                geometry: {
+                  type: "Polygon",
+                  coordinates: polygonCoords
+                }
+              })).flat();
+            } else {
+              return feature;
+            }
+          }).flat();
   
-          add({ name: fileName, data: JSON.stringify(dissolveResult), layerName: fileName });
+          const preparedFeatureCollection = {
+            type: "FeatureCollection",
+            features: featuresPreparedForDissolve
+          };
+  
+          const dissolveResult = dissolve(preparedFeatureCollection);
+          const fileName = `${selectedFile.split('.')[0]}_dissolved.geojson`;
+          const uniqueColor = generateColor();
+  
+          add({ name: fileName, data: JSON.stringify(dissolveResult), layerName: fileName.split('.geojson')[0] });
           addLayer({
             name: fileName,
-            layerName: fileName,
-            url: URL.createObjectURL(new Blob([JSON.stringify(dissolveResult)], {type: "application/json"})),
+            layerName: fileName.split('.geojson')[0],
+            url: URL.createObjectURL(new Blob([JSON.stringify(dissolveResult)], { type: "application/json" })),
             color: uniqueColor,
             outlineColor: "black",
             opacity: 0.5,

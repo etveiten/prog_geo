@@ -66,7 +66,7 @@ function DataList({ mode }) {
       let layerUrl;
       let layerColor = "";
 
-      if (extension === "json" || extension === "geojson" || extension==="") {
+      if (extension === "json" || extension === "geojson" || extension === "") {
         const jsonData = JSON.parse(fileData.data);
         if (jsonData.features && jsonData.features.length > 0) {
           const geometryType = jsonData.features[0].geometry.type;
@@ -116,12 +116,26 @@ function DataList({ mode }) {
         const reader = new FileReader();
         reader.onload = () => {
           const fileData = reader.result;
+          let geometryType = "";
+
+          // Parse the file to extract geometry type if it's JSON or GeoJSON
+          if (extension === "json" || extension === "geojson") {
+            try {
+              const jsonData = JSON.parse(fileData);
+              if (jsonData.features && jsonData.features.length > 0) {
+                geometryType = jsonData.features[0].geometry.type; // Extract the geometry type
+              }
+            } catch (error) {
+              console.error("Error parsing JSON/GeoJSON file:", error);
+            }
+          }
 
           // Add the file to IndexedDB
           add({
             name: fileName,
             data: fileData,
             layerName: fileName.split(".")[0],
+            geometryType,
           });
 
           // Update the state of dataFiles
@@ -186,7 +200,7 @@ function DataList({ mode }) {
         } catch (error) {
           console.error("Error processing GML file:", error);
         }
-      }  else {
+      } else {
         // Handle invalid file extension (e.g., show an error message)
         console.error(`Invalid file extension: ${extension}`);
       }

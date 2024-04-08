@@ -75,16 +75,20 @@ function BufferComponent() {
       setBufferedData(buffered);
 
       //Adding the buffered layer to the map
-      add({ name: customLayerName + '.geojson', data: JSON.stringify(buffered), layerName: customLayerName});
+      add({
+        name: customLayerName + ".geojson",
+        data: JSON.stringify(buffered),
+        layerName: customLayerName,
+      });
       addLayer({
-        name: customLayerName + 'geojson',
+        name: customLayerName + "geojson",
         layerName: customLayerName,
         url: URL.createObjectURL(
           new Blob([JSON.stringify(buffered)], { type: "application/json" })
         ),
         color: "gray",
         outlineColor: "black",
-        opacity: 0.4,
+        opacity: 1.0,
       });
 
       setShowAlert(true);
@@ -135,9 +139,11 @@ function BufferComponent() {
         </div>
         <div className="buffer-row-3">
           <button
-            className="buffer-button"
+            className={`buffer-button ${
+              selectedFile && bufferSize > 0 ? "enabled" : ""
+            }`}
             onClick={handleBuffer}
-            disabled={!selectedFile}
+            disabled={!selectedFile || bufferSize <= 0}
           >
             <span className="button-text">Buffer</span>
           </button>
