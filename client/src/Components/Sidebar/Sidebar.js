@@ -18,6 +18,7 @@ import CloseIcon from "@mui/icons-material/Close";
 function Sidebar() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [showInfo, setShowInfo] = useState(false);
+  const [isContentVisible, setIsContentVisible] = useState(true);
 
   const handleItemClick = (itemId) => {
     if (itemId === selectedItem) {
@@ -31,12 +32,17 @@ function Sidebar() {
     setShowInfo(!showInfo);
   };
 
+  const toggleContentVisibility = () => {
+    setIsContentVisible(!isContentVisible);
+    console.log("fold");
+  };
+
   return (
     <div className="sidebar">
       <div className="sidebar-header">
         <span className="sidebar-title">GIS - made simpler</span>
       </div>
-      <div className="sidebar-options">
+      <div className={`sidebar-options" ${selectedItem !== "data" ? "compact" : ""}`}>
         <div className="sidebar-buttons">
           <div
             className={`sidebar-option ${
@@ -44,17 +50,21 @@ function Sidebar() {
             }`}
             onClick={() => handleItemClick("data")}
           >
-            <DataIcon className="sidebar-icon" />
-            <span className='sidebar-sub-title'>Data</span>
+            <DataIcon
+              className="sidebar-icon"
+              onClick={toggleContentVisibility}
+            />
+            <span className="sidebar-sub-title">Data</span>
             <IconButton onClick={handleInfoClick}>
-            <InfoIcon className='sidebar-icon' />
-          </IconButton>
+              <InfoIcon className="sidebar-icon" />
+            </IconButton>
           </div>
-          
         </div>
-        <div className="sidebar-content">
-           <DataList mode={"files"} />
-        </div>
+        {isContentVisible && (
+          <div className={`sidebar-content ${selectedItem !== "data" ? "folded" : ""}`}>
+            <DataList mode={"files"} />
+          </div>
+        )}
       </div>
       <div className="sidebar-selected-option">
         <div className="sidebar-layers-header">

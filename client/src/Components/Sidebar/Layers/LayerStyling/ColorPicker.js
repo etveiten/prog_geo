@@ -1,10 +1,11 @@
-import React, { useState, useContext, useEffect } from 'react';
+import React, { useState, useContext, useEffect, useRef} from 'react';
 import { SketchPicker } from 'react-color';
 import { LayersContext } from '../LayersContext'; 
 
 function ColorPicker() {
-  const { layerComponents, setLayerComponents, selectedLayerForTool } = useContext(LayersContext);
+  const { layerComponents, setLayerComponents, selectedLayerForTool, setSelectedLayerForTool, setSelectedTool } = useContext(LayersContext);
   const [color, setColor] = useState({ r: 255, g: 255, b: 255, a: 1 });
+  const pickerRef = useRef(null);
 
   // Function to parse a CSS RGBA color string to an RGBA object
   const parseToRgba = (colorStr) => {
@@ -15,6 +16,22 @@ function ColorPicker() {
     }
     return null;
   };
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (pickerRef.current && !pickerRef.current.contains(event.target)) {
+        setSelectedLayerForTool(null); // Assume this also effectively hides the color picker
+
+        // If there's additional state controlling the visibility of the color picker (e.g., selectedTool),
+        // consider resetting that state here as well to ensure the color picker can be reopened with a single click.
+        // For example:
+        setSelectedTool(null); // Uncomment and implement if such state exists
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+}, [setSelectedLayerForTool, setSelectedTool ]); 
 
   // Effect to initialize color picker with selected layer's color
   useEffect(() => {
@@ -40,8 +57,10 @@ function ColorPicker() {
     setLayerComponents(updatedComponents);
   };
 
+  if (!selectedLayerForTool) return null;
+
   return (
-    <div>
+    <div ref={pickerRef}>
       <SketchPicker color={color} onChangeComplete={handleColorChange} />
     </div>
   )
