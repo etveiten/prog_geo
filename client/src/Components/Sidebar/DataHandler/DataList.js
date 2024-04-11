@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext, useMemo } from "react";
 import { LayersContext } from "../Layers/LayersContext";
 import "./DataList.css";
+import GeometryIcon from "../../GeometryIcon";
 
 import { useIndexedDB } from "react-indexed-db-hook";
 // Import icons
@@ -279,6 +280,7 @@ function DataList({ mode }) {
                   )}
                 </button>
                 <span className="data-file-name">{fileName}</span>
+                {/*<GeometryIcon type={geometryType} width="20px" height="20px" /> */}
               </li>
             );
           })}

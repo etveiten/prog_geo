@@ -3,6 +3,7 @@ import { LayersContext } from "./LayersContext";
 import { DragDropContext, Draggable } from "react-beautiful-dnd";
 import { StrictModeDroppable } from "./StrictModeDroppable";
 import Layer from "./Layer";
+import GeometryIcon from "../../GeometryIcon";
 
 // Color and opacity components
 import { CompactPicker } from "react-color";
@@ -146,6 +147,7 @@ const LayersList = () => {
                               className="layer-name-input"
                             />
                           ) : (
+                            
                             <span
                               className="layer-text"
                               onClick={() =>
@@ -153,9 +155,18 @@ const LayersList = () => {
                               }
                             >
                               {layer.layerName}
+                            
                             </span>
+                            
+                            
                           )}
+                          
                         </div>
+                        <div className="geometry-icon">
+                          <GeometryIcon type={layer.type} />
+                        </div>
+
+                        
                       </div>
 
                       <div className="layer-info">
