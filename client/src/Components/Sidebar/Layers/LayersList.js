@@ -80,6 +80,7 @@ const LayersList = () => {
     const startIndex = result.source.index;
     const endIndex = result.destination.index;
 
+
     reorderLayers(startIndex, endIndex);
   };
 

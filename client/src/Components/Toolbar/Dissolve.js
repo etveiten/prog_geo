@@ -99,14 +99,14 @@ function Dissolve() {
             const uniqueColor = generateColor();
 
             add({ name: fileName, data: JSON.stringify(dissolvedGroup), layerName: fileName.split('.geojson')[0] });
-            addLayer({
-              name: fileName,
-              layerName: fileName.split('.geojson')[0],
-              url: URL.createObjectURL(new Blob([JSON.stringify(dissolvedGroup)], { type: "application/json" })),
-              color: uniqueColor,
-              outlineColor: "black",
-              opacity: 1.0,
-            });
+            // addLayer({
+            //   name: fileName,
+            //   layerName: fileName.split('.geojson')[0],
+            //   url: URL.createObjectURL(new Blob([JSON.stringify(dissolvedGroup)], { type: "application/json" })),
+            //   color: uniqueColor,
+            //   outlineColor: "black",
+            //   opacity: 1.0,
+            // });
           });
         } else {
           const featuresPreparedForDissolve = jsonData.features.map((feature) => {
@@ -136,14 +136,14 @@ function Dissolve() {
           const uniqueColor = generateColor();
 
           add({ name: fileName, data: JSON.stringify(dissolveResult), layerName: fileName.split('.geojson')[0] });
-          addLayer({
-            name: fileName,
-            layerName: fileName.split('.geojson')[0],
-            url: URL.createObjectURL(new Blob([JSON.stringify(dissolveResult)], { type: "application/json" })),
-            color: uniqueColor,
-            outlineColor: "black",
-            opacity: 0.5,
-          });
+          // addLayer({
+          //   name: fileName,
+          //   layerName: fileName.split('.geojson')[0],
+          //   url: URL.createObjectURL(new Blob([JSON.stringify(dissolveResult)], { type: "application/json" })),
+          //   color: uniqueColor,
+          //   outlineColor: "black",
+          //   opacity: 0.5,
+          // });
         }
 
         setDissolveData(true);

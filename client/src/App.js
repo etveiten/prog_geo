@@ -27,7 +27,7 @@ function App() {
   //States for the app
   const [isToolsFolded, setIsToolsFolded] = useState(true);
   const [currentComponent, setCurrentComponent] = useState(null);
-  const [selectedIcon, setSelectedIcon] = useState("default");
+  const [selectedIcon, setSelectedIcon] = useState("data");
 
   //Fold tools container
   const handleToolsFoldButtonClick = () => {

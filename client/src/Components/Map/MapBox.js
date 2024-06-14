@@ -28,8 +28,8 @@ function MapBox() {
       container: "mapViewDiv",
       style: "mapbox://styles/mapbox/streets-v12",
 
-      center: [10, 50],
-      zoom: 2.5,
+      center: [8, 50],
+      zoom: 2,
     });
 
     const geocoder = new MapboxGeocoder({
@@ -135,12 +135,15 @@ function MapBox() {
             };
           }
 
+          const layerVisibility = layer.isVisible ? "visible" : "none";
+
           // Add the layer to the map
           map.addLayer({
             id: layer.name,
             type: layerType,
             source: layer.name,
             paint: paintProperties,
+            layout: {visibility: layerVisibility},
           });
 
           //Update the added layers array
@@ -181,7 +184,7 @@ function MapBox() {
             id: layer.name,
             type: layerType,
             source: layer.name,
-            layout: { visibility: layerVisibility },
+            layout: {visibility: layerVisibility},
             paint: paintProperties,
           });
 

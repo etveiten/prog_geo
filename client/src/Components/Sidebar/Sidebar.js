@@ -55,8 +55,8 @@ function Sidebar() {
               onClick={toggleContentVisibility}
             />
             <span className="sidebar-sub-title">Data</span>
-            <IconButton onClick={handleInfoClick}>
-              <InfoIcon className="sidebar-icon" />
+            <IconButton className="icon-button-visible"  onClick={handleInfoClick}>
+              <InfoIcon className="sidebar-icon"></InfoIcon>
             </IconButton>
           </div>
         </div>
@@ -78,7 +78,7 @@ function Sidebar() {
         <LayersList />
       </div>
       {showInfo && (
-        <Alert
+        <Alert className="alert-message"
           severity="info"
           action={
             <IconButton
@@ -92,8 +92,9 @@ function Sidebar() {
           }
         >
           Here are the current layers of the map. You can style each layer by
-          adjusting the color or opacity options. Re-order the layers by
-          dragging a layer to a new place in the list.
+          clicking on the color palette. This will open the styling window. 
+          Re-order the layers by
+          dragging a layer to a new place in the list. Click the eye-icon to toggle on and off visibility of the selected layer. Click on the minus-symbol to remove the layer from the map.
         </Alert>
       )}
     </div>

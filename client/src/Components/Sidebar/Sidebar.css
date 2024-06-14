@@ -44,10 +44,14 @@
   /* border: 1px solid greenyellow; */
 
   background-color: #e0e0e0;
-  padding-left: 1rem;
+  padding-left: 0.52rem;
   padding-right: 1rem;
   border-bottom: 0.2px solid black;
   height: 4rem;
+}
+
+.icon-button-visible{
+  visibility: hidden;
 }
 
 .sidebar-option {
@@ -99,4 +103,8 @@
   overflow-y: auto;
   height: fit-content;
   max-height: 90%;
+}
+
+.alert-message{
+  height: 380px;
 }
