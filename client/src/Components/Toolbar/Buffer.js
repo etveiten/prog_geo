@@ -4,6 +4,7 @@ import { LayersContext } from "../Sidebar/Layers/LayersContext";
 import { Alert } from "@mui/material";
 import "./Buffer.css";
 import { useIndexedDB } from "react-indexed-db-hook";
+import { ReactComponent as BufferIcon } from "../../Icons/buffer_1.svg";
 
 //Component that handles the buffer functionality
 
@@ -101,76 +102,65 @@ function BufferComponent() {
 
   return (
     <div className="buffer-container">
-      <h3 className="buffer-header">Buffer</h3>
-      <div className="buffer-content">
-        <div className="buffer-row-1">
-          <div className="item item1">
-            <label htmlFor="fileInput">Select a file:</label>
-          </div>
-          <div className="item item2">
-            <select
-              id="fileInput"
-              value={selectedFile}
-              onChange={handleFileSelect}
-              className="buffer-select"
-            >
-              <option value="">-- Select a file --</option>
-              {dataFiles.map((fileName) => (
-                <option key={fileName} value={fileName}>
-                  {fileName}
-                </option>
-              ))}
-            </select>
-          </div>
-        </div>
-        <div className="buffer-row-2">
-          <div className="item item3">
-            <label htmlFor="bufferSizeInput">Buffer Size (m):</label>
-          </div>
-          <div className="item item4">
-            <input
-              id="buffer-size-input"
-              type="number"
-              min="-1"
-              value={bufferSize}
-              onChange={handleBufferSizeChange}
-            />
-          </div>
-        </div>
-        <div className="buffer-row-3">
-          <button
-            className={`buffer-button ${
-              selectedFile && bufferSize > 0 ? "enabled" : ""
-            }`}
-            onClick={handleBuffer}
-            disabled={!selectedFile || bufferSize <= 0}
-          >
-            <span className="button-text">Buffer</span>
-          </button>
-        </div>
-        <div className="buffer-row-4">
-          <div className="item">
-            <label htmlFor="customLayerNameInput">Custom Layer Name:</label>
-          </div>
-          <div className="item">
-            <input
-              id="customLayerNameInput"
-              type="text"
-              value={customLayerName}
-              onChange={handleCustomLayerNameChange}
-            />
-          </div>
-        </div>
-        {showAlert && (
-          <Alert
-            severity="success"
-            onClose={() => setShowAlert(false)}
-            sx={{ mt: 2, zIndex: 333 }}
-          >
-            Buffer successfully done.
-          </Alert>
-        )}
+      <div className="buffer-header">
+        <h3>Buffer</h3>
       </div>
+      <div className="file-select">
+        <select id="file" value={selectedFile} onChange={handleFileSelect}>
+          <option value="">Input Layer</option>
+          {dataFiles.map((fileName) => (
+            <option key={fileName} value={fileName}>
+              {fileName}
+            </option>
+          ))}
+        </select>
+      </div>
+
+      <div className="buffer-select">
+        <label htmlFor="bufferSizeInput">Distance (m):</label>
+
+        <div className="item item4">
+          <input
+            id="buffer-size-input"
+            type="number"
+            min="-1"
+            value={bufferSize}
+            onChange={handleBufferSizeChange}
+          />
+        </div>
+      </div>
+
+      <div className="buffer-name">
+
+        <input
+          id="buffer-layer-name"
+          type="text"
+          value={customLayerName}
+          onChange={handleCustomLayerNameChange}
+          placeholder="Set new layer name here"
+        />
+      </div>
+
+      <div className="buffer-button">
+        <button
+          className={`button ${
+            selectedFile && bufferSize > 0 ? "enabled" : ""
+          }`}
+          onClick={handleBuffer}
+          disabled={!selectedFile || bufferSize <= 0}
+        >
+          <span className="button-text">Buffer</span>
+        </button>
+      </div>
+      {bufferedData && (
+        <Alert
+          severity="success"
+          onClose={() => setBufferedData(null)}
+          className="intersect-alert"
+        >
+          Buffer operation successfully done.
+        </Alert>
+      )}
     </div>
   );
 }

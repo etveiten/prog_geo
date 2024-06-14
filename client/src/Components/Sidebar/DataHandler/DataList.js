@@ -241,15 +241,9 @@ function DataList({ mode }) {
           className="data-files-dropzone"
           onDrop={handleDrop}
           onDragOver={handleDragOver}
-          style={{
-            padding: "20px",
-            marginBottom: "20px",
-            width: "80%",
-            height: "300px",
-          }}
         >
           <span className="data-files-dropzone-text">
-            Drag and drop JSON, GeoJSON, zipped Shapefiles or GML files here
+            Drag and drop JSON, GeoJSON, zipped Shapefiles or GML files here. View the imported data in the datalist.
           </span>
         </div>
       ) : mode === "files" ? (

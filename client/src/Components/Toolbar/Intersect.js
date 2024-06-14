@@ -58,7 +58,7 @@ function Intersect() {
         setIntersectData(intersection);
 
         const fileName = customLayerName;
-        add({ name: fileName, data: JSON.stringify(intersection), layerName: customLayerName});
+        add({ name: fileName + ".geojson", data: JSON.stringify(intersection), layerName: customLayerName});
         addLayer({
           name: customLayerName + '.geojson',
           layerName: customLayerName,
@@ -84,16 +84,16 @@ function Intersect() {
   };
 
   return (
-    <div className="intersect-container">
-      <h3 className="intersect-header">Intersect</h3>
-      <div className="intersect-content">
+    <div className="union-container">
+      <div className="union-header">
+        <h3>Intersect</h3>
+      </div>
+      <div className="union-content">
         <div className="intersect-row">
-          <div className="intersect-item">
-            <label htmlFor="file1">Select File 1:</label>
-          </div>
-          <div className="intersect-item2">
+          <div className="union-item1">
+            
             <select id="file1" value={selectedFile1} onChange={handleFile1Select}>
-              <option value="">-- Select a file --</option>
+              <option value="">Select Layer 1</option>
               {dataFiles.map((fileName) => (
                 <option key={fileName} value={fileName}>
                   {fileName}
@@ -102,13 +102,11 @@ function Intersect() {
             </select>
           </div>
         </div>
-        <div className="intersect-row2">
-          <div className="intersect-item3">
-            <label htmlFor="file2">Select File 2:</label>
-          </div>
-          <div className="intersect-item4">
+        <div className="intersect-row">
+          <div className="union-item1">
+          
             <select id="file2" value={selectedFile2} onChange={handleFile2Select}>
-              <option value="">-- Select a file --</option>
+              <option value="">Select Layer 2</option>
               {dataFiles.map((fileName) => (
                 <option key={fileName} value={fileName}>
                   {fileName}
@@ -117,28 +115,30 @@ function Intersect() {
             </select>
           </div>
         </div>
-        <div className="intersect-row3">
-          <button
-            className="intersect-button"
-            onClick={handleIntersection}
-            disabled={!selectedFile1 || !selectedFile2}
-          >
-            <span className="button-text">Intersection</span>
-          </button>
-        </div>
-        <div className="intersect-row4">
-          <div className="item">
-            <label htmlFor="customLayerNameInput">Custom Layer Name:</label>
-          </div>
-          <div className="item">
+        <div className="intersect-item5">
+          <div className="union-item">
+          
             <input
-              id="customLayerNameInput"
+              id="union-item"
               type="text"
               value={customLayerName}
               onChange={handleCustomLayerNameChange}
+              placeholder="Set new layer name here"
             />
           </div>
         </div>
+        <div className="union-button-div">
+        <button
+          className={`button ${
+            selectedFile1 && selectedFile2  ? "enabled" : ""
+          }`}
+          onClick={handleIntersection}
+          disabled={!selectedFile1 || selectedFile2 <= 0}
+        >
+          <span className="button-text">Intersect</span>
+          </button>
+        </div>
+        
         {intersectData && (
           <Alert
             severity="success"

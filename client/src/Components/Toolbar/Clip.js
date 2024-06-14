@@ -68,20 +68,19 @@ function Clip() {
   };
 
   return (
-    <div className="clip-container">
-      <h3 className="clip-header">Clip</h3>
-      <div className="clip-content">
-        <div className="clip-row">
-          <div className="clip-item">
-            <label htmlFor="sourceFile">Select Source File:</label>
-          </div>
-          <div className="clip-item2">
+    <div className="union-container">
+      <div className="union-header">
+        <h3>Clip</h3>
+      </div>
+      <div className="union-content">
+        <div className="intersect-row">
+          <div className="union-item1">
             <select
-              id="sourceFile"
+              id="file1"
               value={selectedSourceFile}
               onChange={handleSourceFileSelect}
             >
-              <option value="">-- Select Source File --</option>
+              <option value="">Select Source File</option>
               {dataFiles.map((fileName) => (
                 <option key={fileName} value={fileName}>{fileName}</option>
               ))}
@@ -89,17 +88,14 @@ function Clip() {
           </div>
         </div>
 
-        <div className="clip-row">
-          <div className="clip-item">
-            <label htmlFor="clipFile">Select Clip File:</label>
-          </div>
-          <div className="clip-item2">
+        <div className="intersect-row">
+          <div className="union-item1">
             <select
               id="clipFile"
               value={selectedClipFile}
               onChange={handleClipFileSelect}
             >
-              <option value="">-- Select Clip File --</option>
+              <option value="">Select Clip File</option>
               {dataFiles.map((fileName) => (
                 <option key={fileName} value={fileName}>{fileName}</option>
               ))}
@@ -107,29 +103,29 @@ function Clip() {
           </div>
         </div>
 
-        <div className="clip-row2">
-          <button
-            className="clip-button"
-            onClick={handleClip}
-            disabled={!selectedSourceFile || !selectedClipFile}
-          >
-            <span className="button-text">Clip</span>
-          </button>
-        </div>
-
-        <div className="clip-row-2">
-          <div className="clip-item">
-            <label htmlFor="customLayerNameInput">Custom Layer Name:</label>
-          </div>
-          <div className="item">
+        <div className="intersect-item5">
+          <div className="union-item">
             <input
-              id="customLayerNameInput"
+              id="union-item"
               type="text"
               value={customLayerName}
               onChange={handleCustomLayerNameChange}
+              placeholder="Set new layer name here"
             />
           </div>
         </div>
+
+        <div className="union-button-div">
+          <button
+          className={`button ${
+            selectedClipFile && selectedSourceFile  ? "enabled" : ""
+          }`}
+          onClick={handleClip}
+          disabled={!selectedClipFile || selectedSourceFile <= 0}
+        >
+          <span className="button-text">Clip</span>
+          </button>
+      </div>
 
         {clipData && (
           <Alert

@@ -51,11 +51,12 @@
 
 .top-bar-container {
   position: absolute;
-  top: 200px; /* Adjust as needed */
+  top: 20%; /* Adjust as needed */
   right: 20px; /* Adjust as needed */
   width: 220px; /* Adjust width as needed */
   height: 300px; /* Adjust height as needed */
   border-radius: 10px;
+  border: 3px solid rgb(84, 144, 234);
   
   overflow-y: hidden;
   /* Add any additional styling as needed */
