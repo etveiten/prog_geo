@@ -20,7 +20,6 @@ function Dock({ onIconClick }) {
     "dissolve",
     "clip",
     "data",
-    "info",
   ];
 
 

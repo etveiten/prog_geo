@@ -1,9 +1,9 @@
 import React, { useState, useEffect, useContext } from "react";
-import { union} from "@turf/turf";
+import { union } from "@turf/turf";
 import { LayersContext } from "../Sidebar/Layers/LayersContext";
 import { convertToPolygon } from "../../Utils/convertData";
 import Alert from "@mui/material/Alert";
-import "./Union.css"
+import "./Union.css";
 import { useIndexedDB } from "react-indexed-db-hook";
 
 //Exactley the same as intersect, but with union instead
@@ -14,9 +14,8 @@ function Union() {
   const [unionData, setUnionData] = useState(null);
   const [customLayerName, setCustomLayerName] = useState(""); // State for custom layer name
 
-
   const { addLayer, layerComponents } = useContext(LayersContext);
-  const { add, getAll, getByIndex} = useIndexedDB("files");
+  const { add, getAll, getByIndex } = useIndexedDB("files");
 
   //Refresh the datalist every time a layerComponent is changed
 
@@ -42,12 +41,11 @@ function Union() {
     setCustomLayerName(event.target.value);
   };
 
-
   const handleUnion = async () => {
     if (selectedFile1 && selectedFile2) {
       const fileData1 = await getByIndex("name", selectedFile1);
       const fileData2 = await getByIndex("name", selectedFile2);
-      
+
       const jsonData1 = JSON.parse(fileData1.data);
       const jsonData2 = JSON.parse(fileData2.data);
 
@@ -58,11 +56,14 @@ function Union() {
         const unionResult = union(poly1, poly2);
         setUnionData(unionResult);
 
-        
-        add({ name: customLayerName + '.geojson', data: JSON.stringify(unionResult), layerName: customLayerName});
+        add({
+          name: customLayerName + ".geojson",
+          data: JSON.stringify(unionResult),
+          layerName: customLayerName,
+        });
         addLayer({
-          name: customLayerName + '.geojson',
-          layerName: customLayerName + '.geojson',
+          name: customLayerName + ".geojson",
+          layerName: customLayerName + ".geojson",
           url: URL.createObjectURL(
             new Blob([JSON.stringify(unionResult)], {
               type: "application/json",
@@ -84,32 +85,20 @@ function Union() {
     }
   };
 
-return (
-  <div className="intersect-container">
-    <h3 className="intersect-header">Union</h3>
-    <div className="intersect-content">
-      <div className="intersect-row">
-        <div className="intersect-item">
-          <label htmlFor="file1">Select File 1:</label>
-        </div>
-        <div className="intersect-item2">
-        <select id="file1" value={selectedFile1} onChange={handleFile1Select}>
-              <option value="">Select File 1</option>
-              {dataFiles.map((fileName) => (
-                <option key={fileName} value={fileName}>
-                  {fileName}
-                </option>
-              ))}
-            </select>
-        </div>
+  return (
+    <div className="union-container">
+      <div className="union-header">
+        <h3>Union</h3>
       </div>
-      <div className="intersect-row2">
-          <div className="intersect-item3">
-            <label htmlFor="file2">Select File 2:</label>
-          </div>
-          <div className="intersect-item4">
-            <select id="file2" value={selectedFile2} onChange={handleFile2Select}>
-              <option value="">Select file 2</option>
+      <div className="union-content">
+        <div className="intersect-row">
+          <div className="union-item1">
+            <select
+              id="file1"
+              value={selectedFile1}
+              onChange={handleFile1Select}
+            >
+              <option value="">Select Layer 1</option>
               {dataFiles.map((fileName) => (
                 <option key={fileName} value={fileName}>
                   {fileName}
@@ -118,42 +107,58 @@ return (
             </select>
           </div>
         </div>
-      <button
-        className="intersect-button"
-        onClick={handleUnion}
-        disabled={!selectedFile1 || !selectedFile2}
-      >
-        Perform Union
-      </button>
-
-      <div className="intersect-item5">
-          <div className="item">
-            <label htmlFor="customLayerNameInput">Custom Layer Name:</label>
+        <div className="intersect-row">
+          <div className="union-item1">
+            <select
+              id="file2"
+              value={selectedFile2}
+              onChange={handleFile2Select}
+            >
+              <option value="">Select Layer 2</option>
+              {dataFiles.map((fileName) => (
+                <option key={fileName} value={fileName}>
+                  {fileName}
+                </option>
+              ))}
+            </select>
           </div>
-          <div className="item">
+        </div>
+
+        <div className="intersect-item5">
+
+          <div className="union-item">
             <input
-              id="customLayerNameInput"
+              id="union-item"
               type="text"
               value={customLayerName}
               onChange={handleCustomLayerNameChange}
+              placeholder="Set new layer name here"
             />
           </div>
         </div>
+        <div className="union-button-div">
+          <button
+          className={`button ${
+            selectedFile1 && selectedFile2  ? "enabled" : ""
+          }`}
+          onClick={handleUnion}
+          disabled={!selectedFile1 || selectedFile2 <= 0}
+        >
+          <span className="button-text">Union</span>
+          </button>
+      </div>
+      </div>
+      {unionData && (
+        <Alert
+          severity="success"
+          onClose={() => setUnionData(null)}
+          className="intersect-alert"
+        >
+          Union successfully done.
+        </Alert>
+      )}
     </div>
-    {unionData && (
-      <Alert
-        severity="success"
-        onClose={() => setUnionData(null)}
-        className="intersect-alert"
-      >
-        Union successfully done.
-      </Alert>
-    )}
-  </div>
-);
-
-  
-
+  );
 }
 
 export default Union;

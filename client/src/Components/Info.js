@@ -8,6 +8,7 @@ import Dissolve from "../Components/Toolbar/Dissolve";
 import Clip from '../Components/Toolbar/Clip';
 import ColorPicker from './Sidebar/Layers/LayerStyling/ColorPicker'; 
 import Opacity from './Sidebar/Layers/LayerStyling/Opacity';
+import InfoComponent from './InfoComponent.js';
 
 import { useContext } from 'react';
 import { LayersContext } from './Sidebar/Layers/LayersContext';
@@ -40,7 +41,8 @@ function Info({ tool }) {
         return <Dissolve />;
       case 'clip':
         return <Clip />;
-      // ... other cases
+      case 'info':
+        return <InfoComponent/>
       default:
         return
     }

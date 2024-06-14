@@ -10,8 +10,12 @@ function MapBox() {
   //Local states, refs and contexts to use the context functionallity
   const [map, setMap] = useState(null);
   const [addedLayers, setAddedLayers] = useState([]);
-  const { layerComponents, setLayerColor, setLayerOpacity } =
-    useContext(LayersContext);
+  const {
+    layerComponents,
+    setLayerColor,
+    setLayerOpacity,
+    setSelectedLayerDetails,
+  } = useContext(LayersContext);
   const [layerOrder, setLayerOrder] = useState([]);
   const prevLayerOrder = useRef([]);
   const layerMap = useRef(new Map());
@@ -23,17 +27,17 @@ function MapBox() {
     const mapInstance = new mapboxgl.Map({
       container: "mapViewDiv",
       style: "mapbox://styles/mapbox/streets-v12",
-      center: [10.3507, 63.4095],
-      zoom: 13,
+
+      center: [10, 50],
+      zoom: 2.5,
     });
 
     const geocoder = new MapboxGeocoder({
       accessToken: mapboxgl.accessToken, // Use your Mapbox access token
       mapboxgl: mapboxgl,
-      marker: true, // Disable the default marker
+      marker: false, // Disable the default marker
       placeholder: "Search for places", // Customize the input placeholder
     });
-
 
     mapInstance.addControl(geocoder);
 
@@ -55,21 +59,16 @@ function MapBox() {
       const features = map.queryRenderedFeatures(e.point);
 
       if (features.length > 0) {
-        // Display information about the clicked feature
-        const featureInfo = features.map((feature) => {
-          const featureProps = feature.properties;
-          const featureInfo = {};
-          for (const prop in featureProps) {
-            if (prop !== "geometry") {
-              featureInfo[prop] = featureProps[prop];
-            }
-          }
-          return featureInfo;
-        });
-        
-        
-        console.log(layerComponents)
+        // Assuming you want to show details of the first feature
+        const feature = features[0];
+        const featureInfo = {
+          properties: feature.properties, // Capture the properties of the feature
+          layerId: feature.layer.id, // The ID of the layer to which the feature belongs
+          // Include other details as necessary
+        };
 
+        // Use setSelectedLayerDetails to update the context
+        setSelectedLayerDetails(featureInfo);
       }
     });
 
@@ -123,7 +122,10 @@ function MapBox() {
               "circle-color": layer.color,
               "circle-radius": 6,
             };
-          } else if (layer.type === "Polygon" || layer.type ==="MutliPolygon") {
+          } else if (
+            layer.type === "Polygon" ||
+            layer.type === "MutliPolygon"
+          ) {
             // Check for polygons
             layerType = "fill";
             paintProperties = {
@@ -148,14 +150,10 @@ function MapBox() {
       // Update the previous layer order
       prevLayerOrder.current = newLayerOrder;
     } else {
-
-      
-
       // Check for added or updated layers
       layerComponents.forEach((layer) => {
+        const layerVisibility = layer.isVisible ? "visible" : "none";
 
-        const layerVisibility = layer.isVisible ? 'visible' : 'none';
-        
         if (!addedLayers.includes(layer.name)) {
           map.addSource(layer.name, {
             type: "geojson",
@@ -183,19 +181,22 @@ function MapBox() {
             id: layer.name,
             type: layerType,
             source: layer.name,
-            layout: {visibility: layerVisibility},
+            layout: { visibility: layerVisibility },
             paint: paintProperties,
           });
 
           setAddedLayers((prevAddedLayers) => [...prevAddedLayers, layer.name]);
         } else {
-         
           // Update paint properties
-          map.setPaintProperty(layer.name, 'fill-color', layer.color);
-          map.setPaintProperty(layer.name, 'fill-opacity', layer.opacity);
+          map.setPaintProperty(layer.name, "fill-color", layer.color);
+          map.setPaintProperty(layer.name, "fill-opacity", layer.opacity);
 
           // Update layout properties (like visibility)
-          map.setLayoutProperty(layer.name, 'visibility', layer.isVisible ? 'visible' : 'none');
+          map.setLayoutProperty(
+            layer.name,
+            "visibility",
+            layer.isVisible ? "visible" : "none"
+          );
         }
       });
     }

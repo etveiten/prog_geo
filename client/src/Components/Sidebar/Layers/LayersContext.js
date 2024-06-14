@@ -16,6 +16,8 @@ export const LayersContext = createContext({
   selectedLayerForTool: null, // Name of the layer for which the tool is selected
   setSelectedTool: () => {},
   setSelectedLayerForTool: () => {},
+  selectedLayerDetails: null,
+  setSelectedLayerDetails: () => {},
 });
 
 export const LayersProvider = ({ children }) => {
@@ -24,7 +26,7 @@ export const LayersProvider = ({ children }) => {
   const [removedLayers, setRemovedLayers] = useState([]);
   const [selectedTool, setSelectedTool] = useState(null);
   const [selectedLayerForTool, setSelectedLayerForTool] = useState(null);
-
+  const [selectedLayerDetails, setSelectedLayerDetails] = useState(null);
 
   const { update, getByIndex } = useIndexedDB("files");
 
@@ -51,14 +53,14 @@ export const LayersProvider = ({ children }) => {
     setRemovedLayers((prevRemovedLayers) => [...prevRemovedLayers, layerName]);
   };
 
-
-
-
   // Function to toggle layer visibility
+
   const toggleLayerVisibility = (layerName) => {
-    setLayerComponents(prevComponents =>
-      prevComponents.map(layer =>
-        layer.name === layerName ? { ...layer, isVisible: !layer.isVisible } : layer
+    setLayerComponents((prevComponents) =>
+      prevComponents.map((layer) =>
+        layer.name === layerName
+          ? { ...layer, isVisible: !layer.isVisible }
+          : layer
       )
     );
   };
@@ -72,7 +74,6 @@ export const LayersProvider = ({ children }) => {
       return result;
     });
   };
-  
 
   //Remove all layers
   const removeAllLayers = () => {
@@ -142,7 +143,8 @@ export const LayersProvider = ({ children }) => {
         setSelectedTool,
         selectedLayerForTool,
         setSelectedLayerForTool,
-       
+        selectedLayerDetails,
+        setSelectedLayerDetails,
       }}
     >
       {children}

@@ -83,20 +83,19 @@ function Difference() {
   };
 
   return (
-    <div className="difference-container">
-      <h3 className="difference-header">Difference</h3>
-      <div className="difference-content">
-        <div className="difference-row">
-          <div className="difference-item">
-            <label htmlFor="file1">Select File 1:</label>
-          </div>
-          <div className="difference-item2">
+    <div className="union-container">
+      <div className="union-header">
+        <h3>Difference</h3>
+      </div>
+      <div className="union-content">
+        <div className="intersect-row">
+          <div className="union-item1">
             <select
               id="file1"
               value={selectedFile1}
               onChange={handleFile1Select}
             >
-              <option value="">-- Select a file --</option>
+              <option value="">Select Layer 1</option>
               {dataFiles.map((fileName) => (
                 <option key={fileName} value={fileName}>
                   {fileName}
@@ -105,17 +104,15 @@ function Difference() {
             </select>
           </div>
         </div>
-        <div className="difference-row2">
-          <div className="difference-item3">
-            <label htmlFor="file2">Select File 2:</label>
-          </div>
-          <div className="difference-item4">
+        <div className="intersect-row">
+          <div className="union-item1">
+            
             <select
               id="file2"
               value={selectedFile2}
               onChange={handleFile2Select}
             >
-              <option value="">-- Select a file --</option>
+              <option value="">Select Layer 2</option>
               {dataFiles.map((fileName) => (
                 <option key={fileName} value={fileName}>
                   {fileName}
@@ -124,29 +121,31 @@ function Difference() {
             </select>
           </div>
         </div>
-        <div className="difference-row3">
-          <button
-            className="difference-button"
-            onClick={handleDifference}
-            disabled={!selectedFile1 || !selectedFile2}
-          >
-            <span className="button-text">Difference</span>
-          </button>
-        </div>
-
-        <div className="difference-row4">
-          <div className="difference-item">
-            <label htmlFor="customLayerNameInput">Custom Layer Name:</label>
-          </div>
-          <div className="item">
+        <div className="intersect-item5">
+          <div className="union-item">
+            
             <input
-              id="customLayerNameInput"
+              id="union-item"
               type="text"
               value={customLayerName}
               onChange={handleCustomLayerNameChange}
+              placeholder="Set new layer name here"
             />
           </div>
         </div>
+        <div className="union-button-div">
+        <button
+          className={`button ${
+            selectedFile1 && selectedFile2  ? "enabled" : ""
+          }`}
+          onClick={handleDifference}
+          disabled={!selectedFile1 || selectedFile2 <= 0}
+        >
+          <span className="button-text">Difference</span>
+          </button>
+        </div>
+
+        
         {differenceData && (
           <Alert
             severity="success"

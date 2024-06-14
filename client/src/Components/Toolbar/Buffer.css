@@ -2,69 +2,89 @@
 .buffer-container {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  padding: 20px;
-  background-color: #f2f2f2;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-}
-
-.buffer-header {
-  margin-bottom: 20px;
-  color: #333;
-}
-
-.buffer-content {
+  height: 100%;
   width: 100%;
+  background-color: #f0f0f0;
+  
 }
 
-.buffer-row {
+.buffer-header{
   display: flex;
-  align-items: center;
-  margin-bottom: 15px;
-}
-
-.buffer-item, .buffer-item2 {
-  flex: 1;
-}
-
-.buffer-item label {
-  display: block;
-  margin-bottom: 5px;
-  color: #555;
-}
-
-.buffer-select, #buffer-size-input {
+  height: 4rem;
   width: 100%;
-  padding: 8px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-  background-color: white;
+  border-bottom: 2px solid black;
+  background-color: #19b6f0;
+  align-items: center;
+  justify-content: center;
 }
 
-.buffer-button {
-  padding: 10px 20px;
+h3 {
   color: white;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-  background-color: #ccc; /* Default color */
+  font-weight: 1100;
+  font-size: 1.5rem;
 }
 
-.buffer-button.enabled {
+
+.file-select{
+  display: flex;
+  width: 80%;
+  margin-top: 1rem;
+  margin-left: 1rem;
+}
+
+.buffer-select{
+  display: flex;
+  flex-direction: row;
+  margin-top: 1rem;
+  margin-left: 1rem;
+}
+
+#buffer-size-input {
+  width: 4rem;
+  margin-left: 0.4rem;
+}
+
+.buffer-name{
+  margin-top:1rem;
+  display: flex;
+  flex-direction: column;
+}
+#buffer-layer-name{
+  margin-left: 1rem;
+  height: 1.5rem;
+  width: 11rem;
+  justify-self: center;
+}
+
+.buffer-button{
+  margin-top: 1.5rem;
+  display: flex;
+  align-self: center;
+}
+
+.button{
+  
+    width: 6rem;
+    height: 3rem;
+    color: white;
+    font-weight: 500;
+    
+    border-radius: 5px;
+}
+
+.button.enabled {
   background-color: #28a745; /* Green color when enabled */
 }
 
-.buffer-button:hover {
+.button:hover {
   background-color: #218838; /* Darker green on hover */
 }
 
-.buffer-button:disabled {
+.button:disabled {
   cursor: default;
 }
 
-.button-text {
+.text {
   font-weight: bold;
 }
 
