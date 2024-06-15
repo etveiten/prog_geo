@@ -48,7 +48,6 @@ def process_zip():
 
             # Convert the processed GeoDataFrame to GeoJSON
             geojson_data = gdf.to_json()
-            print(geojson_data)
 
             return jsonify({"data": geojson_data}), 200
 
@@ -82,6 +81,7 @@ def process_gml():
 
         # Perform any necessary processing on gdf here
         # For example, you can reproject it
+        print(gdf.crs)
         gdf = gdf.to_crs(epsg=4326)
 
         # Convert the processed GeoDataFrame to GeoJSON
