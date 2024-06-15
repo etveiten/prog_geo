@@ -27,7 +27,7 @@
   
   .data-files-item {
     display: grid;
-    grid-template-columns: 1fr 14fr;  
+    grid-template-columns: 1fr 14fr 1fr;  
     max-width: 100%;
     /* border: 2px solid yellow; */
     overflow-x: hidden;
@@ -51,6 +51,16 @@
     width: var(--icon-size);
     height: var(--icon-size);
   }
+
+  .remove-button{
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    cursor: pointer;
+    width: var(--icon-size);
+    height: var(--icon-size);
+  } 
+  
   
   .data-files-dropzone{
     width: 90%;

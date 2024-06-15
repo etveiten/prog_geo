@@ -7,7 +7,7 @@ import GeometryIcon from "../../GeometryIcon";
 
 // Color and opacity components
 import { CompactPicker } from "react-color";
-import OpacitySlider from "./OpacitySlider";
+
 
 // Icons
 import { ReactComponent as RemoveIcon } from "../../../Icons/remove-circle-svgrepo-com.svg";

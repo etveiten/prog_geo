@@ -7,8 +7,8 @@ import DataList from "../Components/Sidebar/DataHandler/DataList";
 import Dissolve from "../Components/Toolbar/Dissolve";
 import Clip from '../Components/Toolbar/Clip';
 import ColorPicker from './Sidebar/Layers/LayerStyling/ColorPicker'; 
-import Opacity from './Sidebar/Layers/LayerStyling/Opacity';
-import InfoComponent from './InfoComponent.js';
+
+
 
 import { useContext } from 'react';
 import { LayersContext } from './Sidebar/Layers/LayersContext';
@@ -21,9 +21,7 @@ function Info({ tool }) {
     // Check if color or opacity tool is selected
     if (selectedTool === 'color' && selectedLayerForTool) {
       return <ColorPicker layer={selectedLayerForTool} />;
-    } else if (selectedTool === 'opacity' && selectedLayerForTool) {
-      return <Opacity layer={selectedLayerForTool} />;
-    }
+    } 
 
     // If no color or opacity tool is selected, check for other tools
     switch (tool) {
@@ -41,8 +39,7 @@ function Info({ tool }) {
         return <Dissolve />;
       case 'clip':
         return <Clip />;
-      case 'info':
-        return <InfoComponent/>
+
       default:
         return
     }

@@ -18,7 +18,6 @@ import MapBox from "./Components/Map/MapBox";
 //DB
 import { DBConfig } from "./Database/DBConfig";
 import { initDB } from "react-indexed-db-hook";
-import MapboxTest from "./Components/Map/MapboxTest";
 import Mapbox from "react-map-gl/dist/esm/mapbox/mapbox";
 
 initDB(DBConfig);

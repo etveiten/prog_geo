@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { intersect, polygon, multiPolygon } from "@turf/turf";
+import { intersect } from "@turf/turf";
 import { LayersContext } from "../Sidebar/Layers/LayersContext";
 import { convertToPolygon } from "../../Utils/convertData";
 import Alert from "@mui/material/Alert";
@@ -11,13 +11,10 @@ function Intersect() {
   const [selectedFile1, setSelectedFile1] = useState("");
   const [selectedFile2, setSelectedFile2] = useState("");
   const [intersectData, setIntersectData] = useState(null);
-  const [customLayerName, setCustomLayerName] = useState(""); // State for custom layer name
-
+  const [customLayerName, setCustomLayerName] = useState("");
 
   const { addLayer, layerComponents } = useContext(LayersContext);
-  const { add, getAll, getByIndex} = useIndexedDB("files");
-
-  //Refresh the datalist every time a layerComponent is changed
+  const { add, getAll, getByIndex } = useIndexedDB("files");
 
   useEffect(() => {
     const fetchData = async () => {
@@ -41,46 +38,63 @@ function Intersect() {
     setCustomLayerName(event.target.value);
   };
 
-  //Sort of the same as buffer, Did reuse most of the components 
   const handleIntersection = async () => {
-    if (selectedFile1 && selectedFile2) {
+    if (selectedFile1 && selectedFile2 && customLayerName) {
       const fileData1 = await getByIndex("name", selectedFile1);
       const fileData2 = await getByIndex("name", selectedFile2);
-      
+
       const jsonData1 = JSON.parse(fileData1.data);
       const jsonData2 = JSON.parse(fileData2.data);
 
       const poly1 = convertToPolygon(jsonData1);
       const poly2 = convertToPolygon(jsonData2);
 
-      if (poly1 && poly2 && customLayerName) {
+      if (poly1 && poly2) {
         const intersection = intersect(poly1, poly2);
-        setIntersectData(intersection);
+        const featureCollection = {
+          type: "FeatureCollection",
+          features: [intersection],
+        };
+        setIntersectData(featureCollection);
 
-        const fileName = customLayerName;
-        add({ name: fileName + ".geojson", data: JSON.stringify(intersection), layerName: customLayerName});
+        const layerColor = generateRandomColor();
+        await add({
+          name: customLayerName + ".geojson",
+          data: JSON.stringify(featureCollection),
+          layerName: customLayerName,
+        });
+
         addLayer({
-          name: customLayerName + '.geojson',
+          name: customLayerName + ".geojson",
           layerName: customLayerName,
           url: URL.createObjectURL(
-            new Blob([JSON.stringify(intersection)], {
+            new Blob([JSON.stringify(featureCollection)], {
               type: "application/json",
             })
           ),
-          color: "gray",
+          color: layerColor,
           outlineColor: "black",
-          opacity: 0.4,
+          opacity: 1,
+          type: "Polygon",
         });
 
         setIntersectData(true);
 
         setTimeout(() => {
-          setIntersectData(null); // Clear intersectData after 3 seconds
-          setSelectedFile1(""); // Reset selectedFile1 to default value
-          setSelectedFile2(""); // Reset selectedFile2 to default value
+          setIntersectData(null);
+          setSelectedFile1("");
+          setSelectedFile2("");
         }, 3000);
       }
     }
+  };
+
+  const generateRandomColor = () => {
+    const randomValue = () => Math.floor(Math.random() * 256);
+    const color = `#${randomValue().toString(16).padStart(2, "0")}${randomValue()
+      .toString(16)
+      .padStart(2, "0")}${randomValue().toString(16).padStart(2, "0")}`;
+    return color;
   };
 
   return (
@@ -91,8 +105,11 @@ function Intersect() {
       <div className="union-content">
         <div className="intersect-row">
           <div className="union-item1">
-            
-            <select id="file1" value={selectedFile1} onChange={handleFile1Select}>
+            <select
+              id="file1"
+              value={selectedFile1}
+              onChange={handleFile1Select}
+            >
               <option value="">Select Layer 1</option>
               {dataFiles.map((fileName) => (
                 <option key={fileName} value={fileName}>
@@ -104,8 +121,11 @@ function Intersect() {
         </div>
         <div className="intersect-row">
           <div className="union-item1">
-          
-            <select id="file2" value={selectedFile2} onChange={handleFile2Select}>
+            <select
+              id="file2"
+              value={selectedFile2}
+              onChange={handleFile2Select}
+            >
               <option value="">Select Layer 2</option>
               {dataFiles.map((fileName) => (
                 <option key={fileName} value={fileName}>
@@ -117,7 +137,6 @@ function Intersect() {
         </div>
         <div className="intersect-item5">
           <div className="union-item">
-          
             <input
               id="union-item"
               type="text"
@@ -128,17 +147,17 @@ function Intersect() {
           </div>
         </div>
         <div className="union-button-div">
-        <button
-          className={`button ${
-            selectedFile1 && selectedFile2  ? "enabled" : ""
-          }`}
-          onClick={handleIntersection}
-          disabled={!selectedFile1 || selectedFile2 <= 0}
-        >
-          <span className="button-text">Intersect</span>
+          <button
+            className={`button ${
+              selectedFile1 && selectedFile2 ? "enabled" : ""
+            }`}
+            onClick={handleIntersection}
+            disabled={!selectedFile1 || !selectedFile2}
+          >
+            <span className="button-text">Intersect</span>
           </button>
         </div>
-        
+
         {intersectData && (
           <Alert
             severity="success"
@@ -152,7 +171,6 @@ function Intersect() {
       </div>
     </div>
   );
-  
 }
 
 export default Intersect;

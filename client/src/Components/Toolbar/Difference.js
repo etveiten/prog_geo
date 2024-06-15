@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext } from "react";
-import { difference, polygon, multiPolygon } from "@turf/turf";
+import { difference } from "@turf/turf";
 import { LayersContext } from "../Sidebar/Layers/LayersContext";
 import { convertToPolygon } from "../../Utils/convertData";
 import Alert from "@mui/material/Alert";
@@ -14,7 +14,7 @@ function Difference() {
   const [customLayerName, setCustomLayerName] = useState(""); // State for custom layer name
 
   const { addLayer, layerComponents } = useContext(LayersContext);
-  const { add, getAll, getByIndex} = useIndexedDB("files");
+  const { add, getAll, getByIndex } = useIndexedDB("files");
 
   //Refresh the datalist every time a layerComponent is changed
 
@@ -40,46 +40,64 @@ function Difference() {
     setCustomLayerName(event.target.value);
   };
 
-  //Calculate difference between two files, had to convert them to polygons from feauturelayers
-  //This function is defined in Utils
+  //Calculate difference between two files, had to convert them to polygons from feature layers
   const handleDifference = async () => {
-    if (selectedFile1 && selectedFile2) {
+    if (selectedFile1 && selectedFile2 && customLayerName) {
       const fileData1 = await getByIndex("name", selectedFile1);
       const fileData2 = await getByIndex("name", selectedFile2);
-      
+
       const jsonData1 = JSON.parse(fileData1.data);
       const jsonData2 = JSON.parse(fileData2.data);
 
       const poly1 = convertToPolygon(jsonData1);
       const poly2 = convertToPolygon(jsonData2);
 
-      if (poly1 && poly2 && customLayerName) {
+      if (poly1 && poly2) {
         const differenceResult = difference(poly1, poly2);
-        setDifferenceData(differenceResult);
+        const featureCollection = {
+          type: "FeatureCollection",
+          features: [differenceResult],
+        };
+        setDifferenceData(featureCollection);
 
-        add({ name: customLayerName + '.geojson', data: JSON.stringify(differenceResult), layerName: customLayerName});
+        const layerColor = generateRandomColor();
+        await add({
+          name: customLayerName + ".geojson",
+          data: JSON.stringify(featureCollection),
+          layerName: customLayerName,
+        });
+
         addLayer({
-          name: customLayerName + '.geojson',
+          name: customLayerName + ".geojson",
           layerName: customLayerName,
           url: URL.createObjectURL(
-            new Blob([JSON.stringify(differenceResult)], {
+            new Blob([JSON.stringify(featureCollection)], {
               type: "application/json",
             })
           ),
-          color: "red",
+          color: layerColor,
           outlineColor: "black",
-          opacity: 0.4,
+          opacity: 1,
+          type: "Polygon",
         });
 
         setDifferenceData(true);
 
         setTimeout(() => {
-          setDifferenceData(null); // Clear intersectData after 3 seconds
-          setSelectedFile1(""); // Reset selectedFile1 to default value
-          setSelectedFile2(""); // Reset selectedFile2 to default value
-        }, 10000);
+          setDifferenceData(null);
+          setSelectedFile1("");
+          setSelectedFile2("");
+        }, 3000);
       }
     }
+  };
+
+  const generateRandomColor = () => {
+    const randomValue = () => Math.floor(Math.random() * 256);
+    const color = `#${randomValue().toString(16).padStart(2, "0")}${randomValue()
+      .toString(16)
+      .padStart(2, "0")}${randomValue().toString(16).padStart(2, "0")}`;
+    return color;
   };
 
   return (
@@ -106,7 +124,6 @@ function Difference() {
         </div>
         <div className="intersect-row">
           <div className="union-item1">
-            
             <select
               id="file2"
               value={selectedFile2}
@@ -123,7 +140,6 @@ function Difference() {
         </div>
         <div className="intersect-item5">
           <div className="union-item">
-            
             <input
               id="union-item"
               type="text"
@@ -134,18 +150,17 @@ function Difference() {
           </div>
         </div>
         <div className="union-button-div">
-        <button
-          className={`button ${
-            selectedFile1 && selectedFile2  ? "enabled" : ""
-          }`}
-          onClick={handleDifference}
-          disabled={!selectedFile1 || selectedFile2 <= 0}
-        >
-          <span className="button-text">Difference</span>
+          <button
+            className={`button ${
+              selectedFile1 && selectedFile2 ? "enabled" : ""
+            }`}
+            onClick={handleDifference}
+            disabled={!selectedFile1 || !selectedFile2}
+          >
+            <span className="button-text">Difference</span>
           </button>
         </div>
 
-        
         {differenceData && (
           <Alert
             severity="success"

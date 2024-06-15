@@ -4,23 +4,18 @@ import { LayersContext } from "../Sidebar/Layers/LayersContext";
 import { Alert } from "@mui/material";
 import "./Buffer.css";
 import { useIndexedDB } from "react-indexed-db-hook";
-import { ReactComponent as BufferIcon } from "../../Icons/buffer_1.svg";
-
-//Component that handles the buffer functionality
 
 function BufferComponent() {
-  //Local state variables for the component to work properly and context to add the new layer to the map
   const [dataFiles, setDataFiles] = useState([]);
   const [selectedFile, setSelectedFile] = useState("");
   const [bufferSize, setBufferSize] = useState(100);
   const [bufferedData, setBufferedData] = useState(null);
   const [showAlert, setShowAlert] = useState(false);
-  const [customLayerName, setCustomLayerName] = useState(""); // State for custom layer name
+  const [customLayerName, setCustomLayerName] = useState("");
 
-  const { addLayer, layerComponents } = useContext(LayersContext);
+  const { addLayer } = useContext(LayersContext);
   const { add, getAll, getByIndex } = useIndexedDB("files");
 
-  //Refresh the datalist every time a layerComponent is changed
   useEffect(() => {
     const fetchData = async () => {
       const data = await getAll();
@@ -29,14 +24,12 @@ function BufferComponent() {
     };
 
     fetchData();
-  }, [layerComponents]);
+  }, []);
 
-  //Functions to handle the file selection and buffer size
   const handleFileSelect = (event) => {
     setSelectedFile(event.target.value);
   };
 
-  //Handling of bad buffer sizes
   const handleBufferSizeChange = (event) => {
     const value = event.target.value.trim();
     if (value === "" || !isNaN(value)) {
@@ -48,15 +41,12 @@ function BufferComponent() {
     setCustomLayerName(event.target.value);
   };
 
-  //Convertion and buffering of the selected file
   const handleBuffer = async () => {
     if (selectedFile && customLayerName) {
-      //add the files for the layer to a const
       const fileData = await getByIndex("name", selectedFile);
       const jsonData = JSON.parse(fileData.data);
 
       let buffered;
-      //If linestring, convert to polygon and then buffer
       if (jsonData.type === "LineString") {
         const polygonBuffer = buffer(jsonData, bufferSize, { units: "meters" });
         const polygonCoords = [polygonBuffer.geometry.coordinates[0]];
@@ -69,35 +59,41 @@ function BufferComponent() {
           },
         };
       } else {
-        //Buffer the polygon or multipolygon
         buffered = buffer(jsonData, bufferSize, { units: "meters" });
       }
 
       setBufferedData(buffered);
 
-      //Adding the buffered layer to the map
-      add({
+      const layerColor = generateRandomColor();
+      await add({
         name: customLayerName + ".geojson",
         data: JSON.stringify(buffered),
         layerName: customLayerName,
       });
+
       addLayer({
-        name: customLayerName + "geojson",
+        name: customLayerName + ".geojson",
         layerName: customLayerName,
         url: URL.createObjectURL(
           new Blob([JSON.stringify(buffered)], { type: "application/json" })
         ),
-        color: "gray",
+        color: layerColor,
         outlineColor: "black",
         opacity: 1.0,
+        type: "Polygon"
       });
 
       setShowAlert(true);
-
       setTimeout(() => {
         setShowAlert(false);
       }, 3000);
     }
+  };
+
+  const generateRandomColor = () => {
+    const randomValue = () => Math.floor(Math.random() * 256);
+    const color = `#${randomValue().toString(16).padStart(2, "0")}${randomValue().toString(16).padStart(2, "0")}${randomValue().toString(16).padStart(2, "0")}`;
+    return color;
   };
 
   return (
@@ -118,7 +114,6 @@ function BufferComponent() {
 
       <div className="buffer-select">
         <label htmlFor="bufferSizeInput">Distance (m):</label>
-
         <div className="item item4">
           <input
             id="buffer-size-input"
@@ -131,7 +126,6 @@ function BufferComponent() {
       </div>
 
       <div className="buffer-name">
-
         <input
           id="buffer-layer-name"
           type="text"
@@ -143,9 +137,7 @@ function BufferComponent() {
 
       <div className="buffer-button">
         <button
-          className={`button ${
-            selectedFile && bufferSize > 0 ? "enabled" : ""
-          }`}
+          className={`button ${selectedFile && bufferSize > 0 ? "enabled" : ""}`}
           onClick={handleBuffer}
           disabled={!selectedFile || bufferSize <= 0}
         >

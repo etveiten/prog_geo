@@ -12,7 +12,6 @@ function Clip() {
   const [clipData, setClipData] = useState(null);
   const [customLayerName, setCustomLayerName] = useState(""); // State for custom layer name
 
-
   const { addLayer, layerComponents } = useContext(LayersContext);
   const { add, getAll, getByIndex } = useIndexedDB("files");
 
@@ -46,17 +45,34 @@ function Clip() {
       const clipJson = JSON.parse(clipData.data);
 
       const clippedResult = clip(sourceJson, clipJson);
-      setClipData(clippedResult);
 
-      
-      add({ name: customLayerName, data: JSON.stringify(clippedResult), layerName: customLayerName });
-      addLayer({
-        name: customLayerName,
+      // Wrap clipped result in a FeatureCollection if not already
+      const featureCollection = clippedResult.type === 'FeatureCollection' ? clippedResult : {
+        type: "FeatureCollection",
+        features: [clippedResult],
+      };
+      setClipData(featureCollection);
+
+      const layerColor = generateRandomColor();
+
+      await add({
+        name: customLayerName + ".geojson",
+        data: JSON.stringify(featureCollection),
         layerName: customLayerName,
-        url: URL.createObjectURL(new Blob([JSON.stringify(clippedResult)], {type: "application/json"})),
-        color: "green",
+      });
+
+      addLayer({
+        name: customLayerName + ".geojson",
+        layerName: customLayerName,
+        url: URL.createObjectURL(
+          new Blob([JSON.stringify(featureCollection)], {
+            type: "application/json",
+          })
+        ),
+        color: layerColor,
         outlineColor: "black",
-        opacity: 0.5,
+        opacity: 1,
+        type: "Polygon",
       });
 
       setTimeout(() => {
@@ -65,6 +81,14 @@ function Clip() {
         setSelectedClipFile("");
       }, 3000);
     }
+  };
+
+  const generateRandomColor = () => {
+    const randomValue = () => Math.floor(Math.random() * 256);
+    const color = `#${randomValue().toString(16).padStart(2, "0")}${randomValue()
+      .toString(16)
+      .padStart(2, "0")}${randomValue().toString(16).padStart(2, "0")}`;
+    return color;
   };
 
   return (
@@ -117,15 +141,15 @@ function Clip() {
 
         <div className="union-button-div">
           <button
-          className={`button ${
-            selectedClipFile && selectedSourceFile  ? "enabled" : ""
-          }`}
-          onClick={handleClip}
-          disabled={!selectedClipFile || selectedSourceFile <= 0}
-        >
-          <span className="button-text">Clip</span>
+            className={`button ${
+              selectedClipFile && selectedSourceFile ? "enabled" : ""
+            }`}
+            onClick={handleClip}
+            disabled={!selectedClipFile || !selectedSourceFile}
+          >
+            <span className="button-text">Clip</span>
           </button>
-      </div>
+        </div>
 
         {clipData && (
           <Alert

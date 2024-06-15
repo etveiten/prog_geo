@@ -7,6 +7,7 @@ import { useIndexedDB } from "react-indexed-db-hook";
 // Import icons
 import { ReactComponent as AddIcon } from "../../../Icons/add-plus-square-svgrepo-com.svg";
 import { ReactComponent as CheckIcon } from "../../../Icons/checkmark-square-svgrepo-com.svg";
+import { ReactComponent as BinIcon } from "../../../Icons/ll_bin.svg";
 
 import axios from "axios";
 
@@ -16,7 +17,7 @@ function DataList({ mode }) {
     useContext(LayersContext);
   const [dataFiles, setDataFiles] = useState([]);
   const [itemColors, setItemColors] = useState({});
-  const { add, getAll, getByIndex } = useIndexedDB("files");
+  const { add, getAll, getByIndex, deleteRecord } = useIndexedDB("files");
 
   //Refresh the datalist every time a layerComponent is changed
   useEffect(() => {
@@ -54,6 +55,14 @@ function DataList({ mode }) {
       .toString(16)
       .padStart(2, "0")}${randomValue().toString(16).padStart(2, "0")}`;
     return color;
+  };
+
+  // Function to delete a file from IndexedDB
+  const handleDeleteFile = async (fileName) => {
+    await deleteRecord(fileName);
+    setDataFiles((prevDataFiles) =>
+      prevDataFiles.filter((name) => name !== fileName)
+    );
   };
 
   //Logic for adding a layer to the map. If its not selected, the item, aka object with data
@@ -243,7 +252,8 @@ function DataList({ mode }) {
           onDragOver={handleDragOver}
         >
           <span className="data-files-dropzone-text">
-            Drag and drop JSON, GeoJSON, zipped Shapefiles or GML files here. View the imported data in the datalist.
+            Drag and drop JSON, GeoJSON, zipped Shapefiles or GML files here.
+            View the imported data in the datalist.
           </span>
         </div>
       ) : mode === "files" ? (
@@ -273,7 +283,15 @@ function DataList({ mode }) {
                     <AddIcon width="20px" height="20px" />
                   )}
                 </button>
+
                 <span className="data-file-name">{fileName}</span>
+                <button
+                  className="remove-button"
+                  onClick={() => handleDeleteFile(fileName)}
+                >
+                  <BinIcon width="20px" height="20px" />
+                </button>
+
                 {/*<GeometryIcon type={geometryType} width="20px" height="20px" /> */}
               </li>
             );
