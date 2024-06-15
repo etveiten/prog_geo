@@ -1,55 +1,48 @@
-import React from 'react';
+import React from "react";
 import Buffer from "../Components/Toolbar/Buffer";
 import Union from "../Components/Toolbar/Union";
 import Intersect from "../Components/Toolbar/Intersect";
 import Difference from "../Components/Toolbar/Difference";
 import DataList from "../Components/Sidebar/DataHandler/DataList";
 import Dissolve from "../Components/Toolbar/Dissolve";
-import Clip from '../Components/Toolbar/Clip';
-import ColorPicker from './Sidebar/Layers/LayerStyling/ColorPicker'; 
+import Clip from "../Components/Toolbar/Clip";
+import ColorPicker from "./Sidebar/Layers/LayerStyling/ColorPicker";
 
-
-
-import { useContext } from 'react';
-import { LayersContext } from './Sidebar/Layers/LayersContext';
-
+import { useContext } from "react";
+import { LayersContext } from "./Sidebar/Layers/LayersContext";
 
 function Info({ tool }) {
   const { selectedTool, selectedLayerForTool } = useContext(LayersContext);
 
   const renderToolComponent = () => {
     // Check if color or opacity tool is selected
-    if (selectedTool === 'color' && selectedLayerForTool) {
+    if (selectedTool === "color" && selectedLayerForTool) {
       return <ColorPicker layer={selectedLayerForTool} />;
-    } 
+    }
 
     // If no color or opacity tool is selected, check for other tools
     switch (tool) {
-      case 'buffer':
+      case "buffer":
         return <Buffer />;
-      case 'union':
+      case "union":
         return <Union />;
-      case 'intersect':
+      case "intersect":
         return <Intersect />;
-      case 'difference':
+      case "difference":
         return <Difference />;
-      case 'data':
-        return <DataList mode={"dropzone"}/>;
-      case 'dissolve':
+      case "data":
+        return <DataList mode={"dropzone"} />;
+      case "dissolve":
         return <Dissolve />;
-      case 'clip':
+      case "clip":
         return <Clip />;
 
       default:
-        return
+        return;
     }
   };
 
-  return (
-    <div className="top-bar-container">
-      {renderToolComponent()}
-    </div>
-  );
+  return <div className="top-bar-container">{renderToolComponent()}</div>;
 }
 
 export default Info;
