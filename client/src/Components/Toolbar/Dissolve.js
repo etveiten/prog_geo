@@ -2,6 +2,10 @@ import React, { useState, useEffect, useContext } from "react";
 import { dissolve, lineToPolygon } from "@turf/turf";
 import { LayersContext } from "../Sidebar/Layers/LayersContext";
 import Alert from "@mui/material/Alert";
+import { IconButton } from "@mui/material";
+import Info from "@mui/icons-material/Info";
+import CloseIcon from "@mui/icons-material/Close";
+import { ReactComponent as InfoIcon } from "../../Icons/info-filled-svgrepo-com.svg";
 import "./Dissolve.css";
 import { useIndexedDB } from "react-indexed-db-hook";
 
@@ -11,6 +15,7 @@ function Dissolve() {
   const [selectedProperty, setSelectedProperty] = useState("");
   const [propertyOptions, setPropertyOptions] = useState([]);
   const [dissolveData, setDissolveData] = useState(null);
+  const [showInfo, setShowInfo] = useState(false);
 
   const { addLayer, layerComponents } = useContext(LayersContext);
   const { add, getAll, getByIndex } = useIndexedDB("files");
@@ -99,14 +104,14 @@ function Dissolve() {
             const uniqueColor = generateColor();
 
             add({ name: fileName, data: JSON.stringify(dissolvedGroup), layerName: fileName.split('.geojson')[0] });
-            // addLayer({
-            //   name: fileName,
-            //   layerName: fileName.split('.geojson')[0],
-            //   url: URL.createObjectURL(new Blob([JSON.stringify(dissolvedGroup)], { type: "application/json" })),
-            //   color: uniqueColor,
-            //   outlineColor: "black",
-            //   opacity: 1.0,
-            // });
+            addLayer({
+              name: fileName,
+              layerName: fileName.split('.geojson')[0],
+              url: URL.createObjectURL(new Blob([JSON.stringify(dissolvedGroup)], { type: "application/json" })),
+              color: uniqueColor,
+              outlineColor: "black",
+              opacity: 1.0,
+            });
           });
         } else {
           const featuresPreparedForDissolve = jsonData.features.map((feature) => {
@@ -136,14 +141,14 @@ function Dissolve() {
           const uniqueColor = generateColor();
 
           add({ name: fileName, data: JSON.stringify(dissolveResult), layerName: fileName.split('.geojson')[0] });
-          // addLayer({
-          //   name: fileName,
-          //   layerName: fileName.split('.geojson')[0],
-          //   url: URL.createObjectURL(new Blob([JSON.stringify(dissolveResult)], { type: "application/json" })),
-          //   color: uniqueColor,
-          //   outlineColor: "black",
-          //   opacity: 0.5,
-          // });
+          addLayer({
+            name: fileName,
+            layerName: fileName.split('.geojson')[0],
+            url: URL.createObjectURL(new Blob([JSON.stringify(dissolveResult)], { type: "application/json" })),
+            color: uniqueColor,
+            outlineColor: "black",
+            opacity: 0.5,
+          });
         }
 
         setDissolveData(true);
@@ -156,10 +161,35 @@ function Dissolve() {
     }
   };
 
+  const handleInfoClick = () => {
+    setShowInfo(!showInfo);
+  };
+
   return (
     <div className="union-container">
       <div className="union-header">
         <h3>Dissolve</h3>
+        <IconButton onClick={handleInfoClick}>
+          <InfoIcon className="info-icon" />
+        </IconButton>
+        {showInfo && (
+          <Alert
+            className="union-message"
+            severity="info"
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={handleInfoClick}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+          >
+            Dissolve operation merges adjacent geometries based on a specified property.
+          </Alert>
+        )}
       </div>
       <div className="union-content">
         <div className="intersect-row">
@@ -198,13 +228,13 @@ function Dissolve() {
 
         <div className="union-button-div">
           <button
-          className={`button ${
-            selectedFile && selectedProperty  ? "enabled" : ""
-          }`}
-          onClick={handleDissolve}
-          disabled={!selectedFile || selectedProperty <= 0}
-        >
-          <span className="button-text">Dissolve</span>
+            className={`button ${
+              selectedFile && selectedProperty  ? "enabled" : ""
+            }`}
+            onClick={handleDissolve}
+            disabled={!selectedFile || selectedProperty <= 0}
+          >
+            <span className="button-text">Dissolve</span>
           </button>
       </div>
         {dissolveData && (

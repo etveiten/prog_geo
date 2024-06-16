@@ -1,72 +1,80 @@
 import React, { useState, useEffect, useContext } from "react";
-import { difference } from "@turf/turf";
-import { LayersContext } from "../Sidebar/Layers/LayersContext";
-import { convertToPolygon } from "../../Utils/convertData";
-import Alert from "@mui/material/Alert";
-import "./Difference.css";
-import { useIndexedDB } from "react-indexed-db-hook";
+import { difference } from "@turf/turf"; // Importing the 'difference' function from turf.js for geometric operations
+import { LayersContext } from "../Sidebar/Layers/LayersContext"; // Importing Layers context to manage layers in the map
+import { convertToPolygon } from "../../Utils/convertData"; // Importing utility function to convert data to polygon format
+import { Alert, IconButton } from "@mui/material"; // Importing MUI components for UI elements
+import Info from "@mui/icons-material/Info"; // Importing Info icon from MUI
+import CloseIcon from "@mui/icons-material/Close"; // Importing Close icon from MUI
+import { ReactComponent as InfoIcon } from "../../Icons/info-filled-svgrepo-com.svg"; // Importing custom Info icon
+import "./Difference.css"; // Importing CSS for Difference component
+import { useIndexedDB } from "react-indexed-db-hook"; // Importing IndexedDB hook for database operations
 
 function Difference() {
-  const [dataFiles, setDataFiles] = useState([]);
-  const [selectedFile1, setSelectedFile1] = useState("");
-  const [selectedFile2, setSelectedFile2] = useState("");
-  const [differenceData, setDifferenceData] = useState(null);
+  // Local states for the component
+  const [dataFiles, setDataFiles] = useState([]); // State to store data files from IndexedDB
+  const [selectedFile1, setSelectedFile1] = useState(""); // State to store the selected first file
+  const [selectedFile2, setSelectedFile2] = useState(""); // State to store the selected second file
+  const [differenceData, setDifferenceData] = useState(null); // State to store the result of the difference operation
   const [customLayerName, setCustomLayerName] = useState(""); // State for custom layer name
+  const [showInfo, setShowInfo] = useState(false); // State to control the visibility of info alert
 
-  const { addLayer, layerComponents } = useContext(LayersContext);
-  const { add, getAll, getByIndex } = useIndexedDB("files");
+  const { addLayer, layerComponents } = useContext(LayersContext); // Context functions to add a layer and get layer components
+  const { add, getAll, getByIndex } = useIndexedDB("files"); // IndexedDB hooks to add, get all and get by index
 
-  //Refresh the datalist every time a layerComponent is changed
-
+  // useEffect hook to fetch data files from IndexedDB on component mount and when layerComponents change
   useEffect(() => {
     const fetchData = async () => {
-      const data = await getAll();
-      const dataFiles = data.map((item) => item.name);
-      setDataFiles(dataFiles);
+      const data = await getAll(); // Get all data from IndexedDB
+      const dataFiles = data.map((item) => item.name); // Extract file names
+      setDataFiles(dataFiles); // Set file names to state
     };
 
     fetchData();
   }, [layerComponents]);
 
+  // Handler for the first file selection
   const handleFile1Select = (event) => {
     setSelectedFile1(event.target.value);
   };
 
+  // Handler for the second file selection
   const handleFile2Select = (event) => {
     setSelectedFile2(event.target.value);
   };
 
+  // Handler for custom layer name change
   const handleCustomLayerNameChange = (event) => {
     setCustomLayerName(event.target.value);
   };
 
-  //Calculate difference between two files, had to convert them to polygons from feature layers
+  // Function to calculate the difference between two files
   const handleDifference = async () => {
     if (selectedFile1 && selectedFile2 && customLayerName) {
-      const fileData1 = await getByIndex("name", selectedFile1);
-      const fileData2 = await getByIndex("name", selectedFile2);
+      const fileData1 = await getByIndex("name", selectedFile1); // Get the selected first file data by name
+      const fileData2 = await getByIndex("name", selectedFile2); // Get the selected second file data by name
 
-      const jsonData1 = JSON.parse(fileData1.data);
-      const jsonData2 = JSON.parse(fileData2.data);
+      const jsonData1 = JSON.parse(fileData1.data); // Parse the first JSON data
+      const jsonData2 = JSON.parse(fileData2.data); // Parse the second JSON data
 
-      const poly1 = convertToPolygon(jsonData1);
-      const poly2 = convertToPolygon(jsonData2);
+      const poly1 = convertToPolygon(jsonData1); // Convert first JSON data to polygon
+      const poly2 = convertToPolygon(jsonData2); // Convert second JSON data to polygon
 
       if (poly1 && poly2) {
-        const differenceResult = difference(poly1, poly2);
+        const differenceResult = difference(poly1, poly2); // Calculate the difference between two polygons
         const featureCollection = {
           type: "FeatureCollection",
           features: [differenceResult],
         };
-        setDifferenceData(featureCollection);
+        setDifferenceData(featureCollection); // Set difference data to state
 
-        const layerColor = generateRandomColor();
+        const layerColor = generateRandomColor(); // Generate random color for the layer
         await add({
           name: customLayerName + ".geojson",
           data: JSON.stringify(featureCollection),
           layerName: customLayerName,
-        });
+        }); // Add difference data to IndexedDB
 
+        // Add difference layer to the map
         addLayer({
           name: customLayerName + ".geojson",
           layerName: customLayerName,
@@ -81,8 +89,9 @@ function Difference() {
           type: "Polygon",
         });
 
-        setDifferenceData(true);
+        setDifferenceData(true); // Set difference data state to true
 
+        // Reset states after 3 seconds
         setTimeout(() => {
           setDifferenceData(null);
           setSelectedFile1("");
@@ -92,6 +101,7 @@ function Difference() {
     }
   };
 
+  // Function to generate random color
   const generateRandomColor = () => {
     const randomValue = () => Math.floor(Math.random() * 256);
     const color = `#${randomValue().toString(16).padStart(2, "0")}${randomValue()
@@ -100,10 +110,36 @@ function Difference() {
     return color;
   };
 
+  // Handler for info button click
+  const handleInfoClick = () => {
+    setShowInfo(!showInfo);
+  };
+
   return (
     <div className="union-container">
       <div className="union-header">
         <h3>Difference</h3>
+        <IconButton onClick={handleInfoClick}>
+          <InfoIcon className="info-icon" />
+        </IconButton>
+        {showInfo && (
+          <Alert
+            className="difference-message"
+            severity="info"
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={handleInfoClick}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+          >
+            Difference operation creates a new layer that represents the geometric difference between the input layers.
+          </Alert>
+        )}
       </div>
       <div className="union-content">
         <div className="intersect-row">
