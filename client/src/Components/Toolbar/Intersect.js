@@ -2,7 +2,10 @@ import React, { useState, useEffect, useContext } from "react";
 import { intersect } from "@turf/turf";
 import { LayersContext } from "../Sidebar/Layers/LayersContext";
 import { convertToPolygon } from "../../Utils/convertData";
-import Alert from "@mui/material/Alert";
+import { Alert, IconButton } from "@mui/material";
+import Info from "@mui/icons-material/Info";
+import CloseIcon from "@mui/icons-material/Close";
+import { ReactComponent as InfoIcon } from "../../Icons/info-filled-svgrepo-com.svg";
 import "./Intersect.css";
 import { useIndexedDB } from "react-indexed-db-hook";
 
@@ -12,6 +15,7 @@ function Intersect() {
   const [selectedFile2, setSelectedFile2] = useState("");
   const [intersectData, setIntersectData] = useState(null);
   const [customLayerName, setCustomLayerName] = useState("");
+  const [showInfo, setShowInfo] = useState(false);
 
   const { addLayer, layerComponents } = useContext(LayersContext);
   const { add, getAll, getByIndex } = useIndexedDB("files");
@@ -97,10 +101,35 @@ function Intersect() {
     return color;
   };
 
+  const handleInfoClick = () => {
+    setShowInfo(!showInfo);
+  };
+
   return (
     <div className="union-container">
       <div className="union-header">
         <h3>Intersect</h3>
+        <IconButton onClick={handleInfoClick}>
+          <InfoIcon className="info-icon" />
+        </IconButton>
+        {showInfo && (
+          <Alert
+            className="union-message"
+            severity="info"
+            action={
+              <IconButton
+                aria-label="close"
+                color="inherit"
+                size="small"
+                onClick={handleInfoClick}
+              >
+                <CloseIcon fontSize="inherit" />
+              </IconButton>
+            }
+          >
+            Intersect operation creates a new layer that represents the area where two input layers overlap.
+          </Alert>
+        )}
       </div>
       <div className="union-content">
         <div className="intersect-row">
